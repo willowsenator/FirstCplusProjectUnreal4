@@ -1,0 +1,7 @@
+"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/Plugins/Developer/RiderLink/Intermediate/Build/Linux/x64/UnrealEditor/Development/RiderLink/Module.RiderLink.cpp.o"
+ -soname="libUnrealEditor-RiderLink.so"
+ -rpath-link="/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/Plugins/Developer/RiderLink/Binaries/Linux"
+ -L"/home/willownsenator/software/UnrealEngine/Engine/Binaries/Linux"
+ -L"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/Plugins/Developer/RiderLink/Binaries/Linux"
+ --start-group
+ --end-group
