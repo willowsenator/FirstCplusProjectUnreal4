@@ -1,0 +1,868 @@
+{
+	"folders": [
+		{
+			"name": "FirstCplusProject",
+			"path": "."
+		},
+		{
+			"name": "UE5",
+			"path": "/home/willownsenator/software/UnrealEngine"
+		}
+	],
+	"settings": {
+		"typescript.tsc.autoDetect": "off",
+		"npm.autoDetect": "off"
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-vscode.cpptools",
+			"ms-dotnettools.csharp",
+			"vadimcn.vscode-lldb",
+			"ms-vscode.mono-debug",
+			"dfarley1.file-picker"
+		]
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "FirstCplusProject Linux Debug Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"Linux",
+					"Debug",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject Linux Debug Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"Linux",
+					"Debug",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FirstCplusProject Linux Debug Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject Linux Debug Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"Linux",
+					"Debug",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject Linux DebugGame Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"Linux",
+					"DebugGame",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject Linux DebugGame Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"Linux",
+					"DebugGame",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FirstCplusProject Linux DebugGame Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject Linux DebugGame Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"Linux",
+					"DebugGame",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject Linux Development Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"Linux",
+					"Development",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject Linux Development Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"Linux",
+					"Development",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FirstCplusProject Linux Development Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject Linux Development Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"Linux",
+					"Development",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject Linux Test Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"Linux",
+					"Test",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject Linux Test Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"Linux",
+					"Test",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FirstCplusProject Linux Test Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject Linux Test Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"Linux",
+					"Test",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject Linux Shipping Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"Linux",
+					"Shipping",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject Linux Shipping Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"Linux",
+					"Shipping",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FirstCplusProject Linux Shipping Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject Linux Shipping Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"Linux",
+					"Shipping",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject LinuxArm64 Debug Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"LinuxArm64",
+					"Debug",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject LinuxArm64 Debug Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"LinuxArm64",
+					"Debug",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FirstCplusProject LinuxArm64 Debug Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject LinuxArm64 Debug Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"LinuxArm64",
+					"Debug",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject LinuxArm64 DebugGame Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"LinuxArm64",
+					"DebugGame",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject LinuxArm64 DebugGame Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"LinuxArm64",
+					"DebugGame",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FirstCplusProject LinuxArm64 DebugGame Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject LinuxArm64 DebugGame Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"LinuxArm64",
+					"DebugGame",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject LinuxArm64 Development Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"LinuxArm64",
+					"Development",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject LinuxArm64 Development Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"LinuxArm64",
+					"Development",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FirstCplusProject LinuxArm64 Development Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject LinuxArm64 Development Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"LinuxArm64",
+					"Development",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject LinuxArm64 Test Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"LinuxArm64",
+					"Test",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject LinuxArm64 Test Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"LinuxArm64",
+					"Test",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FirstCplusProject LinuxArm64 Test Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject LinuxArm64 Test Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"LinuxArm64",
+					"Test",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject LinuxArm64 Shipping Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"LinuxArm64",
+					"Shipping",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject LinuxArm64 Shipping Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"LinuxArm64",
+					"Shipping",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FirstCplusProject LinuxArm64 Shipping Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProject LinuxArm64 Shipping Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProject",
+					"LinuxArm64",
+					"Shipping",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProjectEditor Linux Debug Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProjectEditor",
+					"Linux",
+					"Debug",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProjectEditor Linux Debug Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProjectEditor",
+					"Linux",
+					"Debug",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FirstCplusProjectEditor Linux Debug Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProjectEditor Linux Debug Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProjectEditor",
+					"Linux",
+					"Debug",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProjectEditor Linux DebugGame Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProjectEditor",
+					"Linux",
+					"DebugGame",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProjectEditor Linux DebugGame Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProjectEditor",
+					"Linux",
+					"DebugGame",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FirstCplusProjectEditor Linux DebugGame Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProjectEditor Linux DebugGame Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProjectEditor",
+					"Linux",
+					"DebugGame",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProjectEditor Linux Development Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProjectEditor",
+					"Linux",
+					"Development",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProjectEditor Linux Development Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProjectEditor",
+					"Linux",
+					"Development",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"FirstCplusProjectEditor Linux Development Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			},
+			{
+				"label": "FirstCplusProjectEditor Linux Development Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"FirstCplusProjectEditor",
+					"Linux",
+					"Development",
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/home/willownsenator/software/UnrealEngine"
+				}
+			}
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Launch FirstCplusProject (Debug)",
+				"request": "launch",
+				"program": "/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/Binaries/Linux/FirstCplusProject-Linux-Debug",
+				"preLaunchTask": "FirstCplusProject Linux Debug Build",
+				"args": [
+				],
+				"cwd": "/home/willownsenator/software/UnrealEngine",
+				"type": "cppdbg",
+				"visualizerFile": "/home/willownsenator/software/UnrealEngine/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch FirstCplusProject (DebugGame)",
+				"request": "launch",
+				"program": "/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/Binaries/Linux/FirstCplusProject-Linux-DebugGame",
+				"preLaunchTask": "FirstCplusProject Linux DebugGame Build",
+				"args": [
+				],
+				"cwd": "/home/willownsenator/software/UnrealEngine",
+				"type": "cppdbg",
+				"visualizerFile": "/home/willownsenator/software/UnrealEngine/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch FirstCplusProject (Development)",
+				"request": "launch",
+				"program": "/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/Binaries/Linux/FirstCplusProject",
+				"preLaunchTask": "FirstCplusProject Linux Development Build",
+				"args": [
+				],
+				"cwd": "/home/willownsenator/software/UnrealEngine",
+				"type": "cppdbg",
+				"visualizerFile": "/home/willownsenator/software/UnrealEngine/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch FirstCplusProject (Test)",
+				"request": "launch",
+				"program": "/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/Binaries/Linux/FirstCplusProject-Linux-Test",
+				"preLaunchTask": "FirstCplusProject Linux Test Build",
+				"args": [
+				],
+				"cwd": "/home/willownsenator/software/UnrealEngine",
+				"type": "cppdbg",
+				"visualizerFile": "/home/willownsenator/software/UnrealEngine/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch FirstCplusProject (Shipping)",
+				"request": "launch",
+				"program": "/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/Binaries/Linux/FirstCplusProject-Linux-Shipping",
+				"preLaunchTask": "FirstCplusProject Linux Shipping Build",
+				"args": [
+				],
+				"cwd": "/home/willownsenator/software/UnrealEngine",
+				"type": "cppdbg",
+				"visualizerFile": "/home/willownsenator/software/UnrealEngine/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch FirstCplusProjectEditor (Debug)",
+				"request": "launch",
+				"program": "/home/willownsenator/software/UnrealEngine/Engine/Binaries/Linux/UnrealEditor-Linux-Debug",
+				"preLaunchTask": "FirstCplusProjectEditor Linux Debug Build",
+				"args": [
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject"
+				],
+				"cwd": "/home/willownsenator/software/UnrealEngine",
+				"type": "cppdbg",
+				"visualizerFile": "/home/willownsenator/software/UnrealEngine/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch FirstCplusProjectEditor (DebugGame)",
+				"request": "launch",
+				"program": "/home/willownsenator/software/UnrealEngine/Engine/Binaries/Linux/UnrealEditor-Linux-DebugGame",
+				"preLaunchTask": "FirstCplusProjectEditor Linux DebugGame Build",
+				"args": [
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject"
+				],
+				"cwd": "/home/willownsenator/software/UnrealEngine",
+				"type": "cppdbg",
+				"visualizerFile": "/home/willownsenator/software/UnrealEngine/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch FirstCplusProjectEditor (Development)",
+				"request": "launch",
+				"program": "/home/willownsenator/software/UnrealEngine/Engine/Binaries/Linux/UnrealEditor",
+				"preLaunchTask": "FirstCplusProjectEditor Linux Development Build",
+				"args": [
+					"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject"
+				],
+				"cwd": "/home/willownsenator/software/UnrealEngine",
+				"type": "cppdbg",
+				"visualizerFile": "/home/willownsenator/software/UnrealEngine/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Generate Project Files",
+				"type": "coreclr",
+				"request": "launch",
+				"preLaunchTask": "UnrealBuildTool Linux Development Build",
+				"program": "/home/willownsenator/software/UnrealEngine/Engine/Build/BatchFiles/RunUBT.bat",
+				"args": [
+					"-projectfiles",
+					"-vscode",
+					"-project=/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/FirstCplusProject.uproject",
+					"-game",
+					"-engine",
+					"-dotnet"
+				],
+				"console": "internalConsole",
+				"internalConsoleOptions": "openOnSessionStart",
+				"stopAtEntry": false,
+				"cwd": "/home/willownsenator/software/UnrealEngine"
+			}
+		]
+	}
+}

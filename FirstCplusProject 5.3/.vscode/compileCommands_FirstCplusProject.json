@@ -1,0 +1,58 @@
+[
+	{
+		"file": "/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/Source/FirstCplusProject/FirstCplusProject.Build.cs",
+		"arguments": [
+			"/home/willownsenator/software/UnrealEngine/Engine/Extras/ThirdPartyNotUE/SDKs/HostLinux/Linux_x64/v22_clang-16.0.6-centos7/x86_64-unknown-linux-gnu/bin/clang++",
+			"@/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/.vscode/compileCommands_FirstCplusProject/FirstCplusProject.1.rsp"
+		],
+		"directory": "/home/willownsenator/software/UnrealEngine/Engine/Source"
+	},
+	{
+		"file": "/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/Source/FirstCplusProject/FirstCplusProject.cpp",
+		"arguments": [
+			"/home/willownsenator/software/UnrealEngine/Engine/Extras/ThirdPartyNotUE/SDKs/HostLinux/Linux_x64/v22_clang-16.0.6-centos7/x86_64-unknown-linux-gnu/bin/clang++",
+			"@/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/.vscode/compileCommands_FirstCplusProject/FirstCplusProject.1.rsp"
+		],
+		"directory": "/home/willownsenator/software/UnrealEngine/Engine/Source"
+	},
+	{
+		"file": "/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/Source/FirstCplusProject/FirstCplusProject.h",
+		"arguments": [
+			"/home/willownsenator/software/UnrealEngine/Engine/Extras/ThirdPartyNotUE/SDKs/HostLinux/Linux_x64/v22_clang-16.0.6-centos7/x86_64-unknown-linux-gnu/bin/clang++",
+			"@/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/.vscode/compileCommands_FirstCplusProject/FirstCplusProject.1.rsp"
+		],
+		"directory": "/home/willownsenator/software/UnrealEngine/Engine/Source"
+	},
+	{
+		"file": "/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/Source/FirstCplusProject/GameplayActors/Floater.cpp",
+		"arguments": [
+			"/home/willownsenator/software/UnrealEngine/Engine/Extras/ThirdPartyNotUE/SDKs/HostLinux/Linux_x64/v22_clang-16.0.6-centos7/x86_64-unknown-linux-gnu/bin/clang++",
+			"@/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/.vscode/compileCommands_FirstCplusProject/FirstCplusProject.1.rsp"
+		],
+		"directory": "/home/willownsenator/software/UnrealEngine/Engine/Source"
+	},
+	{
+		"file": "/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/Source/FirstCplusProject/GameplayActors/Floater.h",
+		"arguments": [
+			"/home/willownsenator/software/UnrealEngine/Engine/Extras/ThirdPartyNotUE/SDKs/HostLinux/Linux_x64/v22_clang-16.0.6-centos7/x86_64-unknown-linux-gnu/bin/clang++",
+			"@/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/.vscode/compileCommands_FirstCplusProject/FirstCplusProject.1.rsp"
+		],
+		"directory": "/home/willownsenator/software/UnrealEngine/Engine/Source"
+	},
+	{
+		"file": "/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/Source/FirstCplusProject/MyObject.cpp",
+		"arguments": [
+			"/home/willownsenator/software/UnrealEngine/Engine/Extras/ThirdPartyNotUE/SDKs/HostLinux/Linux_x64/v22_clang-16.0.6-centos7/x86_64-unknown-linux-gnu/bin/clang++",
+			"@/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/.vscode/compileCommands_FirstCplusProject/FirstCplusProject.1.rsp"
+		],
+		"directory": "/home/willownsenator/software/UnrealEngine/Engine/Source"
+	},
+	{
+		"file": "/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/Source/FirstCplusProject/MyObject.h",
+		"arguments": [
+			"/home/willownsenator/software/UnrealEngine/Engine/Extras/ThirdPartyNotUE/SDKs/HostLinux/Linux_x64/v22_clang-16.0.6-centos7/x86_64-unknown-linux-gnu/bin/clang++",
+			"@/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/.vscode/compileCommands_FirstCplusProject/FirstCplusProject.1.rsp"
+		],
+		"directory": "/home/willownsenator/software/UnrealEngine/Engine/Source"
+	}
+]
