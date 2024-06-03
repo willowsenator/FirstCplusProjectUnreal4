@@ -31,7 +31,7 @@ void AFloater::BeginPlay()
 }
 
 // Called every frame
-void AFloater::Tick(float DeltaTime)
+void AFloater::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -43,5 +43,22 @@ void AFloater::Tick(float DeltaTime)
 		UE_LOG(LogTemp, Warning, TEXT("Hit Location: X = %f, Y = %f, Z = %f"),
 			HitLocation.X, HitLocation.Y, HitLocation.Z);
 	}
+
+	const FRotator Rotation = FRotator(0.0f, 0.0f, 1.0f);
+	// ActorWorldRotation
+	//AddActorWorldRotation(Rotation);
+
+	// ActorLocalRotation
+	//AddActorLocalRotation(Rotation);
+
+	// ActorWorldOffset
+	// const FVector WorldOffset = FVector(200.0f, 0.0f, 0.0f);
+	// FHitResult HitResult;
+	// AddActorWorldOffset(WorldOffset, true, &HitResult);
+
+	// ActorLocalOffset
+	// const FVector LocalOffset = FVector(0.0f, 0.0f, 200.0f);
+	// FHitResult HitResult2;
+	// AddActorWorldOffset(LocalOffset, true, &HitResult2);
 }
 
