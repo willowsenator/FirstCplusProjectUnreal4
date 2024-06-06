@@ -2,6 +2,7 @@
 
 
 #include "Floater.h"
+#include "Components/StaticMeshComponent.h"
 
 // Sets default values
 AFloater::AFloater()
@@ -28,6 +29,10 @@ void AFloater::BeginPlay()
 	{
 		SetActorLocation(InitialLocation);
 	}
+	
+	StaticMesh->AddForce(InitialForce);
+	StaticMesh->AddTorqueInDegrees(InitialTorqueInDegrees);
+	StaticMesh->AddTorqueInRadians(InitialTorqueInRadians);
 }
 
 // Called every frame

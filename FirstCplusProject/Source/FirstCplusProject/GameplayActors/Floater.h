@@ -17,6 +17,18 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="ActorMeshComponents")
 	UStaticMeshComponent *StaticMesh;
 
+	// Initial force applied to the mesh
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Floater Variables")
+	FVector InitialForce;
+
+	// Initial torque in degrees applied to the mesh
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Floater Variables")
+	FVector InitialTorqueInDegrees;
+	
+	// Initial torque in radians applied to the mesh
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Floater Variables")
+	FVector InitialTorqueInRadians;
+	
 	// Location used by SetActorLocation() when BeginPlay() is called
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Floater Variables")
 	FVector InitialLocation;
