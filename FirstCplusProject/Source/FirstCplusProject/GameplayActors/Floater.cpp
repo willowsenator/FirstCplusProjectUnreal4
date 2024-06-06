@@ -23,16 +23,31 @@ AFloater::AFloater()
 void AFloater::BeginPlay()
 {
 	Super::BeginPlay();
+
+	/*const float InitialX = FMath::Rand();
+	const float InitialY = FMath::Rand();
+	const float InitialZ = FMath::Rand();*/
+	const float InitialX = FMath::FRandRange(-500.f, 500.f);
+	const float InitialY = FMath::FRandRange(-500.f, 500.f);
+	const float InitialZ = FMath::FRandRange(0.f, 500.f);
+	
+
+	InitialLocation.X = InitialX;
+	InitialLocation.Y = InitialY;
+	InitialLocation.Z = InitialZ;
+
+	//InitialLocation *= 500.f;
+	
 	PlacedLocation = GetActorLocation();
 
 	if(bInitializeFloaterLocations)
 	{
 		SetActorLocation(InitialLocation);
 	}
-	
-	StaticMesh->AddForce(InitialForce);
+
+	/*StaticMesh->AddForce(InitialForce);
 	StaticMesh->AddTorqueInDegrees(InitialTorqueInDegrees);
-	StaticMesh->AddTorqueInRadians(InitialTorqueInRadians);
+	StaticMesh->AddTorqueInRadians(InitialTorqueInRadians);*/
 }
 
 // Called every frame
@@ -49,7 +64,7 @@ void AFloater::Tick(const float DeltaTime)
 			HitLocation.X, HitLocation.Y, HitLocation.Z);
 	}
 
-	const FRotator Rotation = FRotator(0.0f, 0.0f, 1.0f);
+	// const FRotator Rotation = FRotator(0.0f, 0.0f, 1.0f);
 	// ActorWorldRotation
 	//AddActorWorldRotation(Rotation);
 
@@ -64,6 +79,6 @@ void AFloater::Tick(const float DeltaTime)
 	// ActorLocalOffset
 	// const FVector LocalOffset = FVector(0.0f, 0.0f, 200.0f);
 	// FHitResult HitResult2;
-	// AddActorWorldOffset(LocalOffset, true, &HitResult2);
+	// AddActorLocalOffset(LocalOffset, true, &HitResult2);
 }
 
