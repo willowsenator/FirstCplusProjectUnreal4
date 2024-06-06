@@ -11,7 +11,7 @@ class FIRSTCPLUSPROJECT_API AFloater : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
+public:
 	// Sets default values for this actor's properties
 	AFloater();
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="ActorMeshComponents")
