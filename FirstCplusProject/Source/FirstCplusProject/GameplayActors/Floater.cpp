@@ -17,16 +17,15 @@ AFloater::AFloater()
 	
 	bInitializeFloaterLocations = false;
 	bShouldFloat = false;
+	BaseZLocation = 0.0f;
+	A, B, C, D = 0.f;
 }
 
 // Called when the game starts or when spawned
 void AFloater::BeginPlay()
 {
 	Super::BeginPlay();
-
-	/*const float InitialX = FMath::Rand();
-	const float InitialY = FMath::Rand();
-	const float InitialZ = FMath::Rand();*/
+	
 	const float InitialX = FMath::FRandRange(-500.f, 500.f);
 	const float InitialY = FMath::FRandRange(-500.f, 500.f);
 	const float InitialZ = FMath::FRandRange(0.f, 500.f);
@@ -35,8 +34,6 @@ void AFloater::BeginPlay()
 	InitialLocation.X = InitialX;
 	InitialLocation.Y = InitialY;
 	InitialLocation.Z = InitialZ;
-
-	//InitialLocation *= 500.f;
 	
 	PlacedLocation = GetActorLocation();
 
@@ -44,6 +41,8 @@ void AFloater::BeginPlay()
 	{
 		SetActorLocation(InitialLocation);
 	}
+
+	BaseZLocation = PlacedLocation.Z;
 
 	/*StaticMesh->AddForce(InitialForce);
 	StaticMesh->AddTorqueInDegrees(InitialTorqueInDegrees);
@@ -57,11 +56,10 @@ void AFloater::Tick(const float DeltaTime)
 
 	if(bShouldFloat)
 	{
-		FHitResult HitResult;
-		AddActorLocalOffset(InitialDirection, true, &HitResult);
-		const FVector HitLocation = HitResult.Location;
-		UE_LOG(LogTemp, Warning, TEXT("Hit Location: X = %f, Y = %f, Z = %f"),
-			HitLocation.X, HitLocation.Y, HitLocation.Z);
+		FVector NewLocation = GetActorLocation();
+		NewLocation.Z = BaseZLocation + A * FMath::Sin(B * RunningTime - C) + D; // Period = 2 * PI / ABS(B)
+		SetActorLocation(NewLocation);
+		RunningTime += DeltaTime;
 	}
 
 	// const FRotator Rotation = FRotator(0.0f, 0.0f, 1.0f);

@@ -48,6 +48,31 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Floater Variables")
 	bool bInitializeFloaterLocations;
+
+	// Amplitude - how much I oscillate up and down
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Floater Variables")
+	float A;
+
+	// Period - 2 * PI / ABS(B) - how long it takes to complete one cycle
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Floater Variables")
+	float B;
+
+	// Phase Shift - C / B - how much I shift left or right 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Floater Variables")
+	float C;
+
+	// Vertical Shift - D - how much I shift up or down
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Floater Variables")
+	float D;
+
+	
+
+private:
+	float RunningTime;
+	float BaseZLocation;
+
+	
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
