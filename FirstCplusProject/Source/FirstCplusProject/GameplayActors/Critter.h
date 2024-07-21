@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Camera/CameraComponent.h"
+#include "InputActionValue.h"
 #include "GameFramework/Pawn.h"
 #include "Critter.generated.h"
 
@@ -20,10 +21,16 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
+	class UInputMappingContext* InputMapping;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
+	class UInputAction* InputMove;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -38,7 +45,5 @@ public:
 
 private:
 	FVector CurrentVelocity;
-
-	void MoveForward(float Value);
-	void MoveRight(float Value);
+	void Move(const FInputActionValue& Value);
 };
