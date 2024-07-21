@@ -2,14 +2,14 @@
 
 
 #include "Critter.h"
-#include "Components/InputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
 
 // Sets default values
-ACritter::ACritter()
+ACritter::ACritter(): MaxSpeed(100.0f), CurrentVelocity(FVector(0.0f))
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	MeshComponent->SetupAttachment(GetRootComponent());
@@ -20,15 +20,12 @@ ACritter::ACritter()
 	Camera->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f));
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
-	CurrentVelocity = FVector(0.0f);
-	MaxSpeed = 100.0f;
 }
 
 // Called when the game starts or when spawned
 void ACritter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -37,6 +34,8 @@ void ACritter::Tick(const float DeltaTime)
 	Super::Tick(DeltaTime);
 	const FVector NewLocation = GetActorLocation() + (CurrentVelocity * DeltaTime);
 	SetActorLocation(NewLocation);
+	// Reset CurrentVelocity to zero initially
+	CurrentVelocity = FVector(0.0f);
 }
 
 // Called to bind functionality to input
@@ -44,17 +43,42 @@ void ACritter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ACritter::MoveForward);
-	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ACritter::MoveRight);
+	// Get player Controller
+	const APlayerController* PlayerController = Cast<APlayerController>(GetController());
+
+	// Get the local player subsystem
+	UEnhancedInputLocalPlayerSubsystem* Subsystem =
+		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	// Clear out existing mappings
+	Subsystem->ClearAllMappings();
+
+	Subsystem->AddMappingContext(InputMapping, 0);
+
+	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	EnhancedInputComponent->BindAction(InputMove, ETriggerEvent::Triggered, this, &ACritter::Move);
 }
 
-void ACritter::MoveForward(const float Value)
+void ACritter::Move(const FInputActionValue& Value)
 {
-	CurrentVelocity.X = FMath::Clamp(Value, -1.0f, 1.0f) * MaxSpeed;
-}
+	if (Controller != nullptr)
+	{
+		const FVector2d MoveValue = Value.Get<FVector2d>();
+		const FRotator MoveRotation(0, Controller->GetControlRotation().Yaw, 0);
+		
+		// Forward/Backward direction
+		if (MoveValue.Y != 0.f)
+		{
+			const FVector Direction = MoveRotation.RotateVector(FVector::ForwardVector);
+			AddMovementInput(Direction, MoveValue.Y);
+			CurrentVelocity.Y = FMath::Clamp(MoveValue.Y, -1.0f, 1.0f) * MaxSpeed;
+		} 
 
-void ACritter::MoveRight(const float Value)
-{
-	CurrentVelocity.Y = FMath::Clamp(Value, -1.0f, 1.0f) * MaxSpeed;
+		// Right/Left direction
+		if(MoveValue.X != 0.f)
+		{
+			const FVector Direction = MoveRotation.RotateVector(FVector::RightVector);
+			AddMovementInput(Direction, MoveValue.X);
+			CurrentVelocity.X = FMath::Clamp(MoveValue.X, -1.0f, 1.0f) * MaxSpeed;
+		}
+	}
 }
-
