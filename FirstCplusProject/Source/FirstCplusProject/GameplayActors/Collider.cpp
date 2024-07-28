@@ -10,6 +10,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "ColliderMovementComponent.h"
 
 // Sets default values
 ACollider::ACollider()
@@ -17,9 +18,8 @@ ACollider::ACollider()
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
-	SphereComponent->SetupAttachment(GetRootComponent());
+	SetRootComponent(SphereComponent);
 
 	SphereComponent->InitSphereRadius(40.0f);
 	SphereComponent->SetCollisionProfileName(TEXT("Pawn"));
@@ -41,9 +41,13 @@ ACollider::ACollider()
 	SpringArm->TargetArmLength = 400.0f;
 	SpringArm->bEnableCameraLag = true;
 	SpringArm->CameraLagSpeed = 3.0f;
+	
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName); 
+	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+
+	OurMovementComponent = CreateDefaultSubobject<UColliderMovementComponent>(TEXT("OurMovementComponent"));
+	OurMovementComponent->UpdatedComponent = RootComponent;
 	
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 }
@@ -82,22 +86,28 @@ void ACollider::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	EnhancedInputComponent->BindAction(InputMove, ETriggerEvent::Triggered, this, &ACollider::Move);
 }
 
+UPawnMovementComponent* ACollider::GetMovementComponent() const
+{
+	return OurMovementComponent;
+}
+
 void ACollider::Move(const FInputActionValue& Value)
 {
 	if (Controller != nullptr)
 	{
 		const FVector2d MoveValue = Value.Get<FVector2d>();
-		
+		const auto Right = GetActorRightVector();
+		const auto Forward = GetActorForwardVector();
 		// Forward/Backward direction
-		if (MoveValue.Y != 0.f)
+		if (MoveValue.X != 0.f && OurMovementComponent)
 		{
-			AddMovementInput(MoveValue.Y * FVector::ForwardVector);
+			OurMovementComponent->AddInputVector(MoveValue.X * Forward);
 		} 
 
 		// Right/Left direction
-		if(MoveValue.X != 0.f)
+		if(MoveValue.Y != 0.f && OurMovementComponent) 
 		{
-			AddMovementInput(MoveValue.X * FVector::RightVector);
+			OurMovementComponent->AddInputVector(MoveValue.Y * Right);
 		}
 	}
 }
