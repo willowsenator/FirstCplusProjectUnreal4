@@ -11,6 +11,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "ColliderMovementComponent.h"
+#include "Logging/LogMacros.h"
 
 // Sets default values
 ACollider::ACollider()
@@ -48,6 +49,8 @@ ACollider::ACollider()
 
 	OurMovementComponent = CreateDefaultSubobject<UColliderMovementComponent>(TEXT("OurMovementComponent"));
 	OurMovementComponent->UpdatedComponent = RootComponent;
+
+	CameraInput = FVector2d(0.0f, 0.0f);
 	
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 }
@@ -60,10 +63,17 @@ void ACollider::BeginPlay()
 }
 
 // Called every frame
-void ACollider::Tick(float DeltaTime)
+void ACollider::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	FRotator NewRotation = GetActorRotation();
+	NewRotation.Yaw += CameraInput.X;
+	SetActorRotation(NewRotation);
 
+	FRotator NewSpringArmRotation = SpringArm->GetComponentRotation();
+	NewSpringArmRotation.Pitch = FMath::Clamp(NewSpringArmRotation.Pitch += CameraInput.Y, -80.0f, -15.0f);
+	SpringArm->SetWorldRotation(NewSpringArmRotation);
 }
 
 // Called to bind functionality to input
@@ -84,6 +94,9 @@ void ACollider::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 	EnhancedInputComponent->BindAction(InputMove, ETriggerEvent::Triggered, this, &ACollider::Move);
+
+	EnhancedInputComponent->BindAction(InputCameraPitch, ETriggerEvent::Triggered, this, &ACollider::CameraPitch);
+	EnhancedInputComponent->BindAction(InputCameraYaw, ETriggerEvent::Triggered, this, &ACollider::CameraYaw);
 }
 
 UPawnMovementComponent* ACollider::GetMovementComponent() const
@@ -109,5 +122,23 @@ void ACollider::Move(const FInputActionValue& Value)
 		{
 			OurMovementComponent->AddInputVector(MoveValue.Y * Right);
 		}
+	}
+}
+
+void ACollider::CameraPitch(const FInputActionValue& Value)
+{
+	if(Controller != nullptr)
+	{
+		const float PitchValue = Value.Get<float>();
+		CameraInput.Y = PitchValue;
+	}
+}
+
+void ACollider::CameraYaw(const FInputActionValue& Value)
+{
+	if (Controller != nullptr)
+	{
+		const float YawValue = Value.Get<float>();
+		CameraInput.X = YawValue;
 	}
 }
