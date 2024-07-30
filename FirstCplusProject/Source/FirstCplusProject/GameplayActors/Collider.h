@@ -27,6 +27,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
 	class UInputAction* InputMove;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
+	class UInputAction* InputCameraPitch;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
+	class UInputAction* InputCameraYaw;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -65,4 +71,8 @@ public:
 
 private:
 	void Move(const FInputActionValue& Value);
+	void CameraPitch(const FInputActionValue& Value);
+	void CameraYaw(const FInputActionValue& Value);
+
+	FVector2d CameraInput;
 };
