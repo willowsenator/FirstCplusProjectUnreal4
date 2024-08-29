@@ -2,8 +2,12 @@
 
 
 #include "MainCharacter.h"
+
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Engine/World.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -36,7 +40,7 @@ void AMainCharacter::BeginPlay()
 }
 
 // Called every frame
-void AMainCharacter::Tick(float DeltaTime)
+void AMainCharacter::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -47,6 +51,24 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	// Get player Controller
+	const auto *PlayerController = Cast<APlayerController>(GetController());
+
+	// Get the local player subsystem
+	auto *Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+
+	// Clear out existing mappings
+	Subsystem->ClearAllMappings();
+
+	auto *EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	EnhancedInputComponent->BindAction(InputMove, ETriggerEvent::Triggered, this, &AMainCharacter::Move);
+
+	EnhancedInputComponent->BindAction(InputTurn, ETriggerEvent::Triggered, this, &AMainCharacter::Turn);
+	EnhancedInputComponent->BindAction(InputLookUp, ETriggerEvent::Triggered, this, &AMainCharacter::LookUp);
+	EnhancedInputComponent->BindAction(InputTurnRate, ETriggerEvent::Triggered, this, &AMainCharacter::TurnAtRate);
+	EnhancedInputComponent->BindAction(InputLookUpRate, ETriggerEvent::Triggered, this, &AMainCharacter::LookUpAtRate);
+
+	EnhancedInputComponent->BindAction(InputJump, ETriggerEvent::Triggered, this, &AMainCharacter::Jump);
 }
 
 void AMainCharacter::Move(const FInputActionValue& Value)
@@ -67,3 +89,26 @@ void AMainCharacter::Move(const FInputActionValue& Value)
 	}
 }
 
+void AMainCharacter::TurnAtRate(const FInputActionValue& Rate){
+	auto const RateAxis1D = Rate.Get<float>();
+    AddControllerYawInput(RateAxis1D * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+}
+
+
+void AMainCharacter::LookUpAtRate(const FInputActionValue& Rate){
+	auto const RateAxis1D = Rate.Get<float>();
+    AddControllerPitchInput(RateAxis1D * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AMainCharacter::Turn(const FInputActionValue& Value){
+	auto const ValueAxis1D = Value.Get<float>();
+	AddControllerYawInput(ValueAxis1D);
+}
+
+void AMainCharacter::LookUp(const FInputActionValue& Value){
+	auto const ValueAxis1D = Value.Get<float>();
+	AddControllerPitchInput(ValueAxis1D);
+}
+
+void AMainCharacter::Jump(const FInputActionValue& Value){
+}
