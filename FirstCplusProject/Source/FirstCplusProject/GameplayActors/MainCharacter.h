@@ -37,7 +37,27 @@ public:
 
 	/*** Input action for moving the character */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
-	class UInputAction* InputMove;
+	UInputAction* InputMove;
+
+	/*** Input action for turning the character */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
+	UInputAction* InputTurn;
+
+	/*** Input action for turning at rate the character */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
+	UInputAction* InputTurnRate;
+	
+	/*** Input action for looking up and down */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
+	UInputAction* InputLookUp;
+
+	/*** Input action for looking up and down at rate */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
+	UInputAction* InputLookUpRate;
+
+	/*** Input action for jumping */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
+	UInputAction* InputJump;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -50,4 +70,32 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 private:
 	void Move(const FInputActionValue& Value);
+	
+	/** Called via input to turn at a given rate
+    * @param Rate This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
+    */
+	void TurnAtRate(const FInputActionValue& Rate);
+	
+	/** Called via input to look up/down at a given rate
+    * @param Rate This is a normalized rate, i.e. 1.0 means 100% of desired look up/down rate
+    */
+	void LookUpAtRate(const FInputActionValue& Rate);
+
+	/** Called via input to turn the character
+	* @param Value This is the input value for turning the character
+	*/
+	void Turn(const FInputActionValue& Value);
+
+	/** Called via input to look up/down the character
+	 * @param Value This is the input value for looking up/down the character
+	 */
+	void LookUp(const FInputActionValue& Value);
+
+	/** Called via input to make the character jump
+	 * @param Value This is the input value for jumping the character
+	 */
+	void Jump(const FInputActionValue& Value);
+
+	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };
