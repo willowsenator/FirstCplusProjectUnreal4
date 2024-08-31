@@ -39,17 +39,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
 	UInputAction* InputMove;
 
-	/*** Input action for turning the character */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
-	UInputAction* InputTurn;
-
 	/*** Input action for turning at rate the character */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
 	UInputAction* InputTurnRate;
 	
-	/*** Input action for looking up and down */
+	/*** Input action for looking up and down and turning the character*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
-	UInputAction* InputLookUp;
+	UInputAction* InputLook;
 
 	/*** Input action for looking up and down at rate */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
@@ -58,6 +54,11 @@ public:
 	/*** Input action for jumping */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
 	UInputAction* InputJump;
+
+	/*** Stop action for jumping */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
+	UInputAction* InputStopJump;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -80,21 +81,21 @@ private:
     * @param Rate This is a normalized rate, i.e. 1.0 means 100% of desired look up/down rate
     */
 	void LookUpAtRate(const FInputActionValue& Rate);
-
-	/** Called via input to turn the character
-	* @param Value This is the input value for turning the character
-	*/
-	void Turn(const FInputActionValue& Value);
-
-	/** Called via input to look up/down the character
+	
+	/** Called via input to look up/down and turn left/right the character
 	 * @param Value This is the input value for looking up/down the character
 	 */
-	void LookUp(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
 
 	/** Called via input to make the character jump
 	 * @param Value This is the input value for jumping the character
 	 */
 	void Jump(const FInputActionValue& Value);
+
+	/** Called via input to stop the character from jumping
+	 * @param Value This is the input value for stopping the character from jumping
+	 */
+	void StopJump(const FInputActionValue& Value);
 
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }

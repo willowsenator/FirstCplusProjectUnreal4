@@ -60,15 +60,17 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	// Clear out existing mappings
 	Subsystem->ClearAllMappings();
 
+	Subsystem->AddMappingContext(InputMapping, 0);
+
 	auto *EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 	EnhancedInputComponent->BindAction(InputMove, ETriggerEvent::Triggered, this, &AMainCharacter::Move);
 
-	EnhancedInputComponent->BindAction(InputTurn, ETriggerEvent::Triggered, this, &AMainCharacter::Turn);
-	EnhancedInputComponent->BindAction(InputLookUp, ETriggerEvent::Triggered, this, &AMainCharacter::LookUp);
+	EnhancedInputComponent->BindAction(InputLook, ETriggerEvent::Triggered, this, &AMainCharacter::Look);
 	EnhancedInputComponent->BindAction(InputTurnRate, ETriggerEvent::Triggered, this, &AMainCharacter::TurnAtRate);
 	EnhancedInputComponent->BindAction(InputLookUpRate, ETriggerEvent::Triggered, this, &AMainCharacter::LookUpAtRate);
 
 	EnhancedInputComponent->BindAction(InputJump, ETriggerEvent::Triggered, this, &AMainCharacter::Jump);
+	EnhancedInputComponent->BindAction(InputStopJump, ETriggerEvent::Triggered, this, &AMainCharacter::StopJump);
 }
 
 void AMainCharacter::Move(const FInputActionValue& Value)
@@ -100,15 +102,14 @@ void AMainCharacter::LookUpAtRate(const FInputActionValue& Rate){
     AddControllerPitchInput(RateAxis1D * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-void AMainCharacter::Turn(const FInputActionValue& Value){
-	auto const ValueAxis1D = Value.Get<float>();
-	AddControllerYawInput(ValueAxis1D);
-}
-
-void AMainCharacter::LookUp(const FInputActionValue& Value){
-	auto const ValueAxis1D = Value.Get<float>();
-	AddControllerPitchInput(ValueAxis1D);
+void AMainCharacter::Look(const FInputActionValue& Value){
+	auto const LookValue = Value.Get<FVector2d>();
+	AddControllerYawInput(LookValue.X);
+	AddControllerPitchInput(LookValue.Y);
 }
 
 void AMainCharacter::Jump(const FInputActionValue& Value){
+}
+
+void AMainCharacter::StopJump(const FInputActionValue& Value){
 }
