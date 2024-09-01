@@ -27,7 +27,7 @@ AMainCharacter::AMainCharacter()
 	// Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Set turn rates for input
+	// Set base rates for turning and looking up
 	BaseTurnRate = 65.0f;
 	BaseLookUpRate = 65.0f;
 }
@@ -92,14 +92,13 @@ void AMainCharacter::Move(const FInputActionValue& Value)
 }
 
 void AMainCharacter::TurnAtRate(const FInputActionValue& Rate){
-	auto const RateAxis1D = Rate.Get<float>();
-    AddControllerYawInput(RateAxis1D * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+	auto const RateValue = Rate.Get<float>();
+	AddControllerYawInput(RateValue * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
-
 void AMainCharacter::LookUpAtRate(const FInputActionValue& Rate){
-	auto const RateAxis1D = Rate.Get<float>();
-    AddControllerPitchInput(RateAxis1D * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	auto const RateValue = Rate.Get<float>();
+    AddControllerPitchInput(RateValue * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
 void AMainCharacter::Look(const FInputActionValue& Value){
