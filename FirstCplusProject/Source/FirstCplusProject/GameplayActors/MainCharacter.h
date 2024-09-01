@@ -25,12 +25,15 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivate = "true"))
 	class UCameraComponent* FollowCamera;
 
-	/** Base turn rate to scale turning functions for the camera */
+	/** Turn at rate for turning the camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseTurnRate;
+
+	
+	/** Base Look up at rate for turning the camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
-
+	
 	/** Mapping context for enhanced input */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
 	class UInputMappingContext* InputMapping;
@@ -71,13 +74,13 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 private:
 	void Move(const FInputActionValue& Value);
-	
-	/** Called via input to turn at a given rate
-    * @param Rate This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-    */
+
+	/** Called via input to and turn the character at rates
+	* @param Rate This is a normalized rate, i.e. 1.0 means 100% of desired look up/down rate
+	*/
 	void TurnAtRate(const FInputActionValue& Rate);
 	
-	/** Called via input to look up/down at a given rate
+	/** Called via input to look up/down the character at rates
     * @param Rate This is a normalized rate, i.e. 1.0 means 100% of desired look up/down rate
     */
 	void LookUpAtRate(const FInputActionValue& Rate);
