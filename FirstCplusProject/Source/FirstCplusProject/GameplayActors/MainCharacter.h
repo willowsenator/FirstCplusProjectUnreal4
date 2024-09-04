@@ -98,7 +98,7 @@ private:
 	/** Called via input to stop the character from jumping
 	 * @param Value This is the input value for stopping the character from jumping
 	 */
-	void StopJump(const FInputActionValue& Value);
+	void StopJumping(const FInputActionValue& Value);
 
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
