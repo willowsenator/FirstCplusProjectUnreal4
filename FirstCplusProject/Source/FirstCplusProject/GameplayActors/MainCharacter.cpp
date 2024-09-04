@@ -70,7 +70,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	EnhancedInputComponent->BindAction(InputLookUpRate, ETriggerEvent::Triggered, this, &AMainCharacter::LookUpAtRate);
 
 	EnhancedInputComponent->BindAction(InputJump, ETriggerEvent::Triggered, this, &AMainCharacter::Jump);
-	EnhancedInputComponent->BindAction(InputStopJump, ETriggerEvent::Triggered, this, &AMainCharacter::StopJump);
+	EnhancedInputComponent->BindAction(InputStopJump, ETriggerEvent::Triggered, this, &AMainCharacter::StopJumping);
 }
 
 void AMainCharacter::Move(const FInputActionValue& Value)
@@ -108,7 +108,13 @@ void AMainCharacter::Look(const FInputActionValue& Value){
 }
 
 void AMainCharacter::Jump(const FInputActionValue& Value){
+	if(Value.Get<bool>()){
+		ACharacter::Jump();
+	}
 }
 
-void AMainCharacter::StopJump(const FInputActionValue& Value){
+void AMainCharacter::StopJumping(const FInputActionValue& Value){
+	if(Value.Get<bool>()){
+		ACharacter::StopJumping();
+	}
 }
