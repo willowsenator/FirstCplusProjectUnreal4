@@ -7,7 +7,9 @@
 #include "EnhancedInputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Engine/World.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -20,6 +22,21 @@ AMainCharacter::AMainCharacter()
 	CameraBoom->SetupAttachment(GetRootComponent());
 	CameraBoom->TargetArmLength = 600.0f; // The camera follows at this distance behind the character
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+
+	// Set size for collision capsule
+	GetCapsuleComponent()->SetCapsuleSize(48.f, 70.f);
+
+	// Don't rotate when the controller rotates
+	// Let that just affect the camera
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationRoll = false;
+
+	// Configure character movement
+	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 840.0f, 0.0f); // ... at this rotation rate
+	GetCharacterMovement()->JumpZVelocity = 650.f;
+	GetCharacterMovement()->AirControl = 0.2f;
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -88,6 +105,13 @@ void AMainCharacter::Move(const FInputActionValue& Value)
 		
 		AddMovementInput(DirectionX, MoveValue.X);
 		AddMovementInput(DirectionY, MoveValue.Y);
+
+		// Rotate character to face direction of movement
+		if(const FVector DesiredDirection = DirectionX * MoveValue.X + DirectionY * MoveValue.Y; !DesiredDirection.IsNearlyZero())
+		{
+			const FRotator DesiredRotation = DesiredDirection.Rotation();
+			SetActorRotation(FRotator(0.0f, DesiredRotation.Yaw, 0.0f));
+		}
 	}
 }
 
