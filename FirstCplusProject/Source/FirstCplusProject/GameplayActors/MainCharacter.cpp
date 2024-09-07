@@ -14,7 +14,7 @@
 // Sets default values
 AMainCharacter::AMainCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
@@ -40,8 +40,8 @@ AMainCharacter::AMainCharacter()
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	// Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	// Set base rates for turning and looking up
@@ -53,14 +53,12 @@ AMainCharacter::AMainCharacter()
 void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void AMainCharacter::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -69,17 +67,18 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	// Get player Controller
-	const auto *PlayerController = Cast<APlayerController>(GetController());
+	const auto* PlayerController = Cast<APlayerController>(GetController());
 
 	// Get the local player subsystem
-	auto *Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	auto* Subsystem = ULocalPlayer::GetSubsystem<
+		UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
 
 	// Clear out existing mappings
 	Subsystem->ClearAllMappings();
 
 	Subsystem->AddMappingContext(InputMapping, 0);
 
-	auto *EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	auto* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 	EnhancedInputComponent->BindAction(InputMove, ETriggerEvent::Triggered, this, &AMainCharacter::Move);
 
 	EnhancedInputComponent->BindAction(InputLook, ETriggerEvent::Triggered, this, &AMainCharacter::Look);
@@ -92,53 +91,61 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 void AMainCharacter::Move(const FInputActionValue& Value)
 {
-	
-	if(const FVector2d MoveValue = Value.Get<FVector2d>(); Controller != nullptr && MoveValue.X != 0.0f
-		|| MoveValue.Y != 0.0f)
+	const auto MoveValue = Value.Get<FVector2d>();
+	if (Controller == nullptr || MoveValue.X == 0.0f && MoveValue.Y == 0.0f)
 	{
-		// Find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-		
-		const FVector DirectionX = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		const FVector DirectionY = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		
-		AddMovementInput(DirectionX, MoveValue.X);
-		AddMovementInput(DirectionY, MoveValue.Y);
+		return;
+	}
+	// Find out which way is forward
+	const auto Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-		// Rotate character to face direction of movement
-		if(const FVector DesiredDirection = DirectionX * MoveValue.X + DirectionY * MoveValue.Y; !DesiredDirection.IsNearlyZero())
-		{
-			const FRotator DesiredRotation = DesiredDirection.Rotation();
-			SetActorRotation(FRotator(0.0f, DesiredRotation.Yaw, 0.0f));
-		}
+	const auto DirectionX = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	const auto DirectionY = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+	AddMovementInput(DirectionX, MoveValue.X);
+	AddMovementInput(DirectionY, MoveValue.Y);
+
+	// Rotate character to face direction of movement
+	if (const auto DesiredDirection = DirectionX * MoveValue.X + DirectionY * MoveValue.Y; !DesiredDirection.
+		IsNearlyZero())
+	{
+		const auto DesiredRotation = DesiredDirection.Rotation();
+		SetActorRotation(FRotator(0.0f, DesiredRotation.Yaw, 0.0f));
 	}
 }
 
-void AMainCharacter::TurnAtRate(const FInputActionValue& Rate){
+void AMainCharacter::TurnAtRate(const FInputActionValue& Rate)
+{
 	auto const RateValue = Rate.Get<float>();
 	AddControllerYawInput(RateValue * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
-void AMainCharacter::LookUpAtRate(const FInputActionValue& Rate){
+void AMainCharacter::LookUpAtRate(const FInputActionValue& Rate)
+{
 	auto const RateValue = Rate.Get<float>();
-    AddControllerPitchInput(RateValue * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	AddControllerPitchInput(RateValue * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-void AMainCharacter::Look(const FInputActionValue& Value){
+void AMainCharacter::Look(const FInputActionValue& Value)
+{
 	auto const LookValue = Value.Get<FVector2d>();
 	AddControllerYawInput(LookValue.X);
 	AddControllerPitchInput(LookValue.Y);
 }
 
-void AMainCharacter::Jump(const FInputActionValue& Value){
-	if(Value.Get<bool>()){
+void AMainCharacter::Jump(const FInputActionValue& Value)
+{
+	if (Value.Get<bool>())
+	{
 		ACharacter::Jump();
 	}
 }
 
-void AMainCharacter::StopJumping(const FInputActionValue& Value){
-	if(Value.Get<bool>()){
+void AMainCharacter::StopJumping(const FInputActionValue& Value)
+{
+	if (Value.Get<bool>())
+	{
 		ACharacter::StopJumping();
 	}
 }
