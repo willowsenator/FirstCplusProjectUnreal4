@@ -1,6 +1,0 @@
-"/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/Plugins/Developer/RiderLink/Intermediate/Build/Linux/x64/UnrealEditor/Development/RiderShaderInfo/Module.RiderShaderInfo.cpp.o"
- -soname="libUnrealEditor-RiderShaderInfo.so"
- -rpath-link="/home/willownsenator/projects/unreal/FirstCplusProjectUnreal4/FirstCplusProject 5.3/Plugins/Developer/RiderLink/Binaries/Linux"
- -L"/home/willownsenator/software/UnrealEngine/Engine/Binaries/Linux"
- --start-group
- --end-group
