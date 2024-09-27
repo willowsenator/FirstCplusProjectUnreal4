@@ -24,10 +24,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Floor Switch")
 	UStaticMeshComponent* FloorSwitch;
 
-	/** Door to move when the floor switch is stepped on */
+	/** Tree to move when the floor switch is stepped on */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Floor Switch")
-	UStaticMeshComponent* Door;
-	
+	UStaticMeshComponent* Tree;
+
+	/** Initial location for the floor switch */
+	UPROPERTY(BlueprintReadWrite, Category = "Floor Switch")
+	FVector InitialSwitchLocation;
+
+	/** Initial location for the tree */
+	UPROPERTY(BlueprintReadWrite, Category = "Floor Switch")
+	FVector InitialTreeLocation;
 
 protected:
 	// Called when the game starts or when spawned
@@ -41,4 +48,22 @@ public:
 
 	UFUNCTION()
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Floor Switch")
+	void MoveUpTree();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Floor Switch")
+	void MoveDownTree();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Floor Switch")
+	void MoveUpFloorSwitch();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Floor Switch")
+	void MoveDownFloorSwitch();
+
+	UFUNCTION(BlueprintCallable, Category = "Floor Switch")
+	void UpdateTreeLocation(float Z) const;
+
+	UFUNCTION(BlueprintCallable, Category = "Floor Switch")
+	void UpdateFloorSwitchLocation(float Z) const;
 };

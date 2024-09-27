@@ -22,9 +22,8 @@ AFloorSwitch::AFloorSwitch()
 	FloorSwitch = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FloorSwitch"));
 	FloorSwitch->SetupAttachment(GetRootComponent());
 
-	Door = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Door"));
-	Door->SetupAttachment(GetRootComponent());
-
+	Tree = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Door"));
+	Tree->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned
@@ -34,6 +33,9 @@ void AFloorSwitch::BeginPlay()
 
 	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &AFloorSwitch::OnOverlapBegin);
 	TriggerBox->OnComponentEndOverlap.AddDynamic(this, &AFloorSwitch::OnOverlapEnd);
+
+	InitialSwitchLocation = FloorSwitch->GetComponentLocation();
+	InitialTreeLocation = Tree->GetComponentLocation();
 }
 
 // Called every frame
@@ -45,12 +47,28 @@ void AFloorSwitch::Tick(float DeltaTime)
 
 void AFloorSwitch::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Start  Overlap with %s"), *OtherActor->GetName());
+	MoveUpTree();
+	MoveDownFloorSwitch();
 }
 
 void AFloorSwitch::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	UE_LOG(LogTemp, Warning, TEXT("End Overlap with %s"), *OtherActor->GetName());
+	MoveDownTree();
+	MoveUpFloorSwitch();
+}
+
+void AFloorSwitch::UpdateTreeLocation(const float Z) const
+{
+	FVector NewLocation = InitialTreeLocation;
+	NewLocation.Z += Z;
+	Tree->SetWorldLocation(NewLocation);
+}
+
+void AFloorSwitch::UpdateFloorSwitchLocation(const float Z) const
+{
+	FVector NewLocation = InitialSwitchLocation;
+	NewLocation.Z -= Z;
+	FloorSwitch->SetWorldLocation(NewLocation);
 }
 
 
