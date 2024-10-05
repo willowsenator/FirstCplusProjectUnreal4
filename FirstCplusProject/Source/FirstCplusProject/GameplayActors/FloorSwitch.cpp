@@ -22,7 +22,7 @@ AFloorSwitch::AFloorSwitch()
 	FloorSwitch = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FloorSwitch"));
 	FloorSwitch->SetupAttachment(GetRootComponent());
 
-	Tree = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Door"));
+	Tree = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tree"));
 	Tree->SetupAttachment(GetRootComponent());
 }
 
@@ -39,7 +39,7 @@ void AFloorSwitch::BeginPlay()
 }
 
 // Called every frame
-void AFloorSwitch::Tick(float DeltaTime)
+void AFloorSwitch::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
