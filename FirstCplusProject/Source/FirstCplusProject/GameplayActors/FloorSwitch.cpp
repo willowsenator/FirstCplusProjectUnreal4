@@ -24,6 +24,9 @@ AFloorSwitch::AFloorSwitch()
 
 	Tree = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tree"));
 	Tree->SetupAttachment(GetRootComponent());
+
+	SwitchTime = 2.f;
+	bCharacterOnSwitch = false;
 }
 
 // Called when the game starts or when spawned
@@ -47,14 +50,35 @@ void AFloorSwitch::Tick(const float DeltaTime)
 
 void AFloorSwitch::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	MoveUpTree();
-	MoveDownFloorSwitch();
+	HandleOverlap(true);
 }
 
 void AFloorSwitch::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	MoveDownTree();
-	MoveUpFloorSwitch();
+	HandleOverlap(false);
+}
+
+void AFloorSwitch::HandleOverlap(const bool bBeginOverlap)
+{
+	if (bBeginOverlap)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Overlap Begin"));
+		if(!bCharacterOnSwitch)
+		{
+			bCharacterOnSwitch = true;
+		}
+		MoveUpTree();
+		MoveDownFloorSwitch();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Overlap End"));
+		if (bCharacterOnSwitch)
+		{
+			bCharacterOnSwitch = false;
+		}
+		GetWorldTimerManager().SetTimer(SwitchHandle, this, &AFloorSwitch::RestoreTreeAndSwitchPosition, SwitchTime);
+	}
 }
 
 void AFloorSwitch::UpdateTreeLocation(const float Z) const
@@ -67,9 +91,19 @@ void AFloorSwitch::UpdateTreeLocation(const float Z) const
 void AFloorSwitch::UpdateFloorSwitchLocation(const float Z) const
 {
 	FVector NewLocation = InitialSwitchLocation;
-	NewLocation.Z -= Z;
+	NewLocation.Z += Z;
 	FloorSwitch->SetWorldLocation(NewLocation);
 }
+
+void AFloorSwitch::RestoreTreeAndSwitchPosition()
+{
+	if(!bCharacterOnSwitch)
+	{
+		MoveDownTree();
+		MoveUpFloorSwitch();
+	}
+}
+
 
 
 
