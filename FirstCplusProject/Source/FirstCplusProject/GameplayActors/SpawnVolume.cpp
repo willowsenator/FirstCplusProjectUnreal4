@@ -36,3 +36,15 @@ FVector ASpawnVolume::GetRandomPointInVolume() const
 	return UKismetMathLibrary::RandomPointInBoundingBox(SpawnOrigin, SpawnExtent);
 }
 
+void ASpawnVolume::SpawnOurPawn_Implementation(UClass *ToSpawn, const FVector &Location)
+{
+	if(ToSpawn)
+	{
+		if (const auto World = GetWorld())
+		{
+			const auto SpawnParams = FActorSpawnParameters();
+			World->SpawnActor<ACritter>(ToSpawn, Location, FRotator(0.0f), SpawnParams);
+		}
+	}
+}
+
