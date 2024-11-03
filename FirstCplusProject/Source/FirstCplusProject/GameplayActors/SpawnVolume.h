@@ -33,4 +33,7 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Spawning")
 	FVector GetRandomPointInVolume() const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Spawning")
+	void SpawnOurPawn(UClass *ToSpawn, const FVector &Location);
 };
