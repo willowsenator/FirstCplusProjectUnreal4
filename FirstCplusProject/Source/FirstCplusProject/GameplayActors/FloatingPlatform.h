@@ -47,5 +47,5 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	
 	void ToggleInterping();
-	void SwapVectors(FVector& VecOne, FVector& VecTwo);
+	static void SwapVectors(FVector& VecOne, FVector& VecTwo);
 };
