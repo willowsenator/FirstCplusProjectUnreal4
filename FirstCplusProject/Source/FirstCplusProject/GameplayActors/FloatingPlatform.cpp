@@ -33,19 +33,17 @@ void AFloatingPlatform::BeginPlay()
 }
 
 // Called every frame
-void AFloatingPlatform::Tick(float DeltaTime)
+void AFloatingPlatform::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 	if (bInterping)
 	{
-		FVector CurrentLocation = GetActorLocation();
-		FVector Interp = FMath::VInterpTo(CurrentLocation, EndPoint, DeltaTime, InterpSpeed);
+		const FVector CurrentLocation = GetActorLocation();
+		const FVector Interp = FMath::VInterpTo(CurrentLocation, EndPoint, DeltaTime, InterpSpeed);
 		SetActorLocation(Interp);
 
-		float DistanceTravelled = (GetActorLocation() - StartPoint).Size();
-
-		if(Distance - DistanceTravelled <= 1.f)
+		if(const float DistanceTravelled = (GetActorLocation() - StartPoint).Size(); Distance - DistanceTravelled <= 1.f)
 		{
 			ToggleInterping();
 			GetWorldTimerManager().SetTimer(InterpTimer, this, &AFloatingPlatform::ToggleInterping, InterpTime);
@@ -61,7 +59,7 @@ void AFloatingPlatform::ToggleInterping()
 
 void AFloatingPlatform::SwapVectors(FVector& VecOne, FVector& VecTwo)
 {
-	FVector Temp = VecOne;
+	const FVector Temp = VecOne;
 	VecOne = VecTwo;
 	VecTwo = Temp;
 }
