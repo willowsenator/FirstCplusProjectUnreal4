@@ -3,8 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
+#include "Components/SphereComponent.h"
+#include "NiagaraComponent.h"
 #include "Item.generated.h"
 
 UCLASS()
@@ -18,6 +19,17 @@ public:
 	/** Base shape collision */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Item | Collision")
 	USphereComponent* CollisionVolume;
+
+	/** Base Mesh Component */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Item | Mesh")
+	UStaticMeshComponent* Mesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Item | Particles")
+	UNiagaraComponent* IdleParticlesComponent;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Item | Particles")
+	UNiagaraSystem* OverlapParticles;
+	
 
 protected:
 	// Called when the game starts or when spawned
