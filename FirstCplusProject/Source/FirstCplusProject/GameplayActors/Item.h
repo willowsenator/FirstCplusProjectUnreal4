@@ -29,7 +29,15 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Item | Particles")
 	UNiagaraSystem* OverlapParticles;
-	
+
+	UPROPERTY(EditAnywhere, Blueprintable, Category= "Item | Sounds")
+	USoundCue* OverlapSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Item | ItemProperties")
+	bool bRotate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Item | ItemProperties")
+	float RotateRate;
 
 protected:
 	// Called when the game starts or when spawned
