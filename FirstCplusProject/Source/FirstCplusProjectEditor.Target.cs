@@ -1,11 +1,10 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
-using System.Collections.Generic;
 
 public class FirstCplusProjectEditorTarget : TargetRules
 {
-	public FirstCplusProjectEditorTarget( TargetInfo Target) : base(Target)
+	public FirstCplusProjectEditorTarget( TargetInfo target) : base(target)
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
