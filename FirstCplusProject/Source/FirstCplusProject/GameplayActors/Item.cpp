@@ -4,6 +4,8 @@
 #include "Item.h"
 
 #include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 AItem::AItem()
@@ -19,6 +21,9 @@ AItem::AItem()
 
 	IdleParticlesComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("IdleParticlesComponent"));
 	IdleParticlesComponent->SetupAttachment(GetRootComponent());
+
+	bRotate = false;
+	RotateRate = 45.f;
 }
 
 // Called when the game starts or when spawned
@@ -35,6 +40,12 @@ void AItem::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bRotate)
+	{
+		auto Rotation = GetActorRotation();
+		Rotation.Yaw += DeltaTime * RotateRate;
+		SetActorRotation(Rotation);
+	}
 }
 
 void AItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -44,6 +55,12 @@ void AItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), OverlapParticles, GetActorLocation(), FRotator(0.f), FVector(1.f), true, true, ENCPoolMethod::AutoRelease);
 	}
+
+	if (OverlapSound)
+	{
+		UGameplayStatics::PlaySound2D(this, OverlapSound);
+	}
+	
 	Destroy();
 }
 
