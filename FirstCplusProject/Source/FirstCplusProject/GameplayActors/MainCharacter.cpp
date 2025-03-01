@@ -54,6 +54,33 @@ AMainCharacter::AMainCharacter()
 	MaxStamina = 350.0f;
 	Stamina = 120.0f;
 	Coins = 0;
+	MaxCoins = 99999;
+}
+
+void AMainCharacter::DecreaseHealth(const float Amount)
+{
+	if (Health - Amount <= 0.0f)
+	{
+		Health = 0.0f;
+		Die();
+	}
+	else
+	{
+		Health -= Amount;
+	}
+}
+
+void AMainCharacter::Die()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Player died"));
+}
+
+void AMainCharacter::IncrementCoins(const int32 Amount)
+{
+	if (Coins + Amount <= MaxCoins)
+	{
+		Coins += Amount;
+	}
 }
 
 // Called when the game starts or when spawned
