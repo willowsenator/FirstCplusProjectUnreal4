@@ -47,6 +47,13 @@ AMainCharacter::AMainCharacter()
 	// Set base rates for turning and looking up
 	BaseTurnRate = 65.0f;
 	BaseLookUpRate = 65.0f;
+
+	// Player stats
+	MaxHealth = 100.0f;
+	Health = 65.0f;
+	MaxStamina = 350.0f;
+	Stamina = 120.0f;
+	Coins = 0;
 }
 
 // Called when the game starts or when spawned
