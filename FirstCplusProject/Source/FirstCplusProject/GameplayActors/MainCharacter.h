@@ -78,7 +78,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Player Stats")
 	int32 Coins;
 
-	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Player Stats")
+	int32 MaxCoins;
+
+	void DecreaseHealth(float Amount);
+
+	static void Die();
+	void IncrementCoins(int32 Amount);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
