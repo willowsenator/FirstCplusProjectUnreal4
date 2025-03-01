@@ -61,6 +61,23 @@ public:
 	/*** Stop action for jumping */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
 	UInputAction* InputStopJump;
+
+	/** PlayerStats */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Player Stats")
+	float MaxHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Player Stats")
+	float Health;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Player Stats")
+	float MaxStamina;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Player Stats")
+	float Stamina;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Player Stats")
+	int32 Coins;
+
 	
 protected:
 	// Called when the game starts or when spawned
