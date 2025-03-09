@@ -55,6 +55,9 @@ AMainCharacter::AMainCharacter()
 	Stamina = 120.0f;
 	Coins = 0;
 	MaxCoins = 99999;
+
+	RunningSpeed = 650.0f;
+	SprintingSpeed = 950.0f;
 }
 
 void AMainCharacter::DecreaseHealth(const float Amount)
@@ -121,6 +124,8 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 	EnhancedInputComponent->BindAction(InputJump, ETriggerEvent::Triggered, this, &AMainCharacter::Jump);
 	EnhancedInputComponent->BindAction(InputStopJump, ETriggerEvent::Triggered, this, &AMainCharacter::StopJumping);
+
+	EnhancedInputComponent->BindAction(InputSprint, ETriggerEvent::Triggered, this, &AMainCharacter::Sprint);
 }
 
 void AMainCharacter::Move(const FInputActionValue& Value)
@@ -182,4 +187,28 @@ void AMainCharacter::StopJumping(const FInputActionValue& Value)
 	{
 		ACharacter::StopJumping();
 	}
+}
+
+void AMainCharacter::Sprint(const FInputActionValue& Value)
+{
+	if (Value.Get<bool>())
+	{
+		bSprinting = !bSprinting;
+	}
+}
+
+void AMainCharacter::SetMovementStatus(const EMovementStatus NewMovementStatus)
+{
+	if (MovementStatus != NewMovementStatus)
+	{
+		MovementStatus = NewMovementStatus;
+		UpdateMovementSpeed();
+	}
+}
+
+void AMainCharacter::UpdateMovementSpeed() const
+{
+	GetCharacterMovement()->MaxWalkSpeed = (MovementStatus == EMovementStatus::EMS_Sprinting)
+		                                       ? SprintingSpeed
+		                                       : RunningSpeed;
 }
