@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "MainCharacter.h"
 #include "Animation/AnimInstance.h"
 #include "MainCharacterAnimInstance.generated.h"
 
@@ -29,4 +30,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement)
 	APawn* Pawn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement)
+	AMainCharacter* MainCharacter;
 };
