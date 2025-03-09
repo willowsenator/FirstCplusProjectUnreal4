@@ -8,6 +8,14 @@
 #include "InputMappingContext.h"
 #include "MainCharacter.generated.h"
 
+UENUM(BlueprintType)
+enum class EMovementStatus : uint8
+{
+	EMS_Normal UMETA(DisplayName = "Normal"),
+	EMS_Sprinting UMETA(DisplayName = "Sprinting"),
+	EMS_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
 UCLASS()
 class FIRSTCPLUSPROJECT_API AMainCharacter : public ACharacter
 {
@@ -16,6 +24,20 @@ class FIRSTCPLUSPROJECT_API AMainCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AMainCharacter();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Enums")
+	EMovementStatus MovementStatus;
+
+	void SetMovementStatus(EMovementStatus NewMovementStatus);
+	void UpdateMovementSpeed() const;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Running")
+	float RunningSpeed;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Running")
+	float SprintingSpeed;
+
+	bool bSprinting;
 
 	/** Camera boom positioning the camera behind the player */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivate = "true"))
@@ -62,6 +84,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
 	UInputAction* InputStopJump;
 
+	/*** Input action for sprinting */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
+	UInputAction* InputSprint; 
+	
 	/** PlayerStats */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Player Stats")
 	float MaxHealth;
@@ -123,6 +149,11 @@ private:
 	 * @param Value This is the input value for stopping the character from jumping
 	 */
 	void StopJumping(const FInputActionValue& Value);
+
+	/** Called via input to make the character sprint
+     * @param Value This is the input value for sprinting the character
+     */
+	void Sprint(const FInputActionValue& Value);
 
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
