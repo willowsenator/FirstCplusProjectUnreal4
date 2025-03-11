@@ -3,6 +3,7 @@
 
 #include "MainCharacter.h"
 
+#include "AnimationEditorViewportClient.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -58,6 +59,13 @@ AMainCharacter::AMainCharacter()
 
 	RunningSpeed = 650.0f;
 	SprintingSpeed = 950.0f;
+
+	// Initialize enums
+	MovementStatus = EMovementStatus::EMS_Normal;
+	StaminaStatus = EStaminaStatus::ESS_Normal;
+
+	StaminaDrainRate = 25.f;
+	MinSprintStamina = 50.0f;
 }
 
 void AMainCharacter::DecreaseHealth(const float Amount)
@@ -93,9 +101,11 @@ void AMainCharacter::BeginPlay()
 }
 
 // Called every frame
-void AMainCharacter::Tick(const float DeltaTime)
+void AMainCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	const auto DeltaStamina = StaminaDrainRate * DeltaTime;
 }
 
 // Called to bind functionality to input
@@ -122,10 +132,14 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	EnhancedInputComponent->BindAction(InputTurnRate, ETriggerEvent::Triggered, this, &AMainCharacter::TurnAtRate);
 	EnhancedInputComponent->BindAction(InputLookUpRate, ETriggerEvent::Triggered, this, &AMainCharacter::LookUpAtRate);
 
-	EnhancedInputComponent->BindAction(InputJump, ETriggerEvent::Triggered, this, &AMainCharacter::Jump);
-	EnhancedInputComponent->BindAction(InputStopJump, ETriggerEvent::Triggered, this, &AMainCharacter::StopJumping);
+	EnhancedInputComponent->BindAction(InputStartJumping, ETriggerEvent::Triggered, this,
+	                                   &AMainCharacter::StartJumping);
+	EnhancedInputComponent->BindAction(InputStopJumping, ETriggerEvent::Triggered, this, &AMainCharacter::StopJumping);
 
-	EnhancedInputComponent->BindAction(InputSprint, ETriggerEvent::Triggered, this, &AMainCharacter::Sprint);
+	EnhancedInputComponent->BindAction(InputStartSprinting, ETriggerEvent::Triggered, this,
+	                                   &AMainCharacter::StartSprinting);
+	EnhancedInputComponent->BindAction(InputStopSprinting, ETriggerEvent::Triggered, this,
+	                                   &AMainCharacter::StopSprinting);
 }
 
 void AMainCharacter::Move(const FInputActionValue& Value)
@@ -173,7 +187,7 @@ void AMainCharacter::Look(const FInputActionValue& Value)
 	AddControllerPitchInput(LookValue.Y);
 }
 
-void AMainCharacter::Jump(const FInputActionValue& Value)
+void AMainCharacter::StartJumping(const FInputActionValue& Value)
 {
 	if (Value.Get<bool>())
 	{
@@ -183,27 +197,33 @@ void AMainCharacter::Jump(const FInputActionValue& Value)
 
 void AMainCharacter::StopJumping(const FInputActionValue& Value)
 {
-	if (Value.Get<bool>())
-	{
-		ACharacter::StopJumping();
-	}
+	    if (!Value.Get<bool>())
+	    {
+		    ACharacter::StopJumping();
+	    }
 }
 
-void AMainCharacter::Sprint(const FInputActionValue& Value)
+void AMainCharacter::StartSprinting(const FInputActionValue& Value)
 {
 	if (Value.Get<bool>())
 	{
-		bSprinting = !bSprinting;
+		bSprinting = true;
+		SetMovementStatus(EMovementStatus::EMS_Sprinting);
+	}
+}
+
+void AMainCharacter::StopSprinting(const FInputActionValue& Value)
+{
+	if (!Value.Get<bool>()) {
+		bSprinting = false;
+		SetMovementStatus(EMovementStatus::EMS_Normal);
 	}
 }
 
 void AMainCharacter::SetMovementStatus(const EMovementStatus NewMovementStatus)
 {
-	if (MovementStatus != NewMovementStatus)
-	{
-		MovementStatus = NewMovementStatus;
-		UpdateMovementSpeed();
-	}
+	MovementStatus = NewMovementStatus;
+	UpdateMovementSpeed();
 }
 
 void AMainCharacter::UpdateMovementSpeed() const
