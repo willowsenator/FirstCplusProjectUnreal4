@@ -13,7 +13,19 @@ enum class EMovementStatus : uint8
 {
 	EMS_Normal UMETA(DisplayName = "Normal"),
 	EMS_Sprinting UMETA(DisplayName = "Sprinting"),
+	
 	EMS_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
+UENUM(BlueprintType)
+enum class EStaminaStatus : uint8
+{
+    ESS_Normal UMETA(DisplayName = "Normal"),
+    ESS_BelowMinimum UMETA(DisplayName = "BelowMinimum"),
+    ESS_Exhausted UMETA(DisplayName = "Exhausted"),
+	ESS_ExhaustedRecovering UMETA(DisplayName = "ExhaustedRecovering"),
+	
+    ESS_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
 UCLASS()
@@ -28,6 +40,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Enums")
 	EMovementStatus MovementStatus;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Enums")
+	EStaminaStatus StaminaStatus;
+
+	FORCEINLINE void SetStaminaStatus(const EStaminaStatus NewStaminaStatus) { StaminaStatus = NewStaminaStatus; }
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float StaminaDrainRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float MinSprintStamina;
+	
 	void SetMovementStatus(EMovementStatus NewMovementStatus);
 	void UpdateMovementSpeed() const;
 
@@ -78,15 +101,19 @@ public:
 
 	/*** Input action for jumping */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
-	UInputAction* InputJump;
+	UInputAction* InputStartJumping;
 
 	/*** Stop action for jumping */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
-	UInputAction* InputStopJump;
+	UInputAction* InputStopJumping;
 
-	/*** Input action for sprinting */
+	/*** Start action for sprinting */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
-	UInputAction* InputSprint; 
+	UInputAction* InputStartSprinting;
+
+	/*** Stop action for sprinting */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
+	UInputAction* InputStopSprinting;
 	
 	/** PlayerStats */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Player Stats")
@@ -143,17 +170,22 @@ private:
 	/** Called via input to make the character jump
 	 * @param Value This is the input value for jumping the character
 	 */
-	void Jump(const FInputActionValue& Value);
+	void StartJumping(const FInputActionValue& Value);
 
 	/** Called via input to stop the character from jumping
 	 * @param Value This is the input value for stopping the character from jumping
 	 */
 	void StopJumping(const FInputActionValue& Value);
 
-	/** Called via input to make the character sprint
+	/*** Called via input to make the character sprint
      * @param Value This is the input value for sprinting the character
      */
-	void Sprint(const FInputActionValue& Value);
+	void StartSprinting(const FInputActionValue& Value);
+
+	/*** Called via input to stop the character from sprinting
+     * @param Value This is the input value for stopping the character from sprinting
+     */
+	void StopSprinting(const FInputActionValue& Value);
 
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
