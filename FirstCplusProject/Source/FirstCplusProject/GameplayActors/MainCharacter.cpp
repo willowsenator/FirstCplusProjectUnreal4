@@ -106,6 +106,14 @@ void AMainCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	const auto DeltaStamina = StaminaDrainRate * DeltaTime;
+
+	if (bSprinting)
+	{
+		HandleSprinting(DeltaStamina);
+	} else
+	{
+		HandleNotSprinting(DeltaStamina);
+	}
 }
 
 // Called to bind functionality to input
@@ -205,10 +213,9 @@ void AMainCharacter::StopJumping(const FInputActionValue& Value)
 
 void AMainCharacter::StartSprinting(const FInputActionValue& Value)
 {
-	if (Value.Get<bool>())
+	if (Value.Get<bool>() && GetVelocity().Size() > 0.0f && Stamina > 0.0f)
 	{
 		bSprinting = true;
-		SetMovementStatus(EMovementStatus::EMS_Sprinting);
 	}
 }
 
@@ -216,7 +223,6 @@ void AMainCharacter::StopSprinting(const FInputActionValue& Value)
 {
 	if (!Value.Get<bool>()) {
 		bSprinting = false;
-		SetMovementStatus(EMovementStatus::EMS_Normal);
 	}
 }
 
@@ -232,3 +238,86 @@ void AMainCharacter::UpdateMovementSpeed() const
 		                                       ? SprintingSpeed
 		                                       : RunningSpeed;
 }
+
+void AMainCharacter::HandleSprinting(const float DeltaStamina)
+{
+	switch (StaminaStatus)
+	{
+	case EStaminaStatus::ESS_Normal:
+		if (Stamina - DeltaStamina <= MinSprintStamina)
+		{
+			SetStaminaStatus(EStaminaStatus::ESS_BelowMinimum);
+		}
+		Stamina -= DeltaStamina;
+		SetMovementStatus(EMovementStatus::EMS_Sprinting);
+		break;
+
+	case EStaminaStatus::ESS_BelowMinimum:
+		if (Stamina - DeltaStamina <= 0.f)
+		{
+			SetStaminaStatus(EStaminaStatus::ESS_Exhausted);
+			Stamina = 0.f;
+			SetMovementStatus(EMovementStatus::EMS_Normal);
+		}
+		else
+		{
+			Stamina -= DeltaStamina;
+			SetMovementStatus(EMovementStatus::EMS_Sprinting);
+		}
+		break;
+
+	case EStaminaStatus::ESS_Exhausted:
+		Stamina = 0.f;
+		SetMovementStatus(EMovementStatus::EMS_Normal);
+		break;
+
+	default:
+		break;
+	}
+}
+
+void AMainCharacter::HandleNotSprinting(const float DeltaStamina)
+{
+	switch (StaminaStatus)
+	{
+	case EStaminaStatus::ESS_Normal:
+		if (Stamina + DeltaStamina >= MaxStamina)
+		{
+			Stamina = MaxStamina;
+		}
+		else
+		{
+			Stamina += DeltaStamina;
+		}
+		SetMovementStatus(EMovementStatus::EMS_Normal);
+		break;
+
+	case EStaminaStatus::ESS_BelowMinimum:
+		if (Stamina + DeltaStamina >= MinSprintStamina)
+		{
+			SetStaminaStatus(EStaminaStatus::ESS_Normal);
+		}
+		Stamina += DeltaStamina;
+		SetMovementStatus(EMovementStatus::EMS_Normal);
+		break;
+
+	case EStaminaStatus::ESS_Exhausted:
+		SetStaminaStatus(EStaminaStatus::ESS_ExhaustedRecovering);
+		Stamina += DeltaStamina;
+		SetMovementStatus(EMovementStatus::EMS_Normal);
+		break;
+
+	case EStaminaStatus::ESS_ExhaustedRecovering:
+		if (Stamina + DeltaStamina >= MinSprintStamina)
+		{
+			SetStaminaStatus(EStaminaStatus::ESS_Normal);
+		}
+		Stamina += DeltaStamina;
+		SetMovementStatus(EMovementStatus::EMS_Normal);
+		break;
+
+	default:
+		break;
+	} 
+}
+
