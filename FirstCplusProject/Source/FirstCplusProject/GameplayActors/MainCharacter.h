@@ -189,4 +189,7 @@ private:
 
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	void HandleNotSprinting(const float DeltaStamina);
+	void HandleSprinting(const float DeltaStamina);
 };
