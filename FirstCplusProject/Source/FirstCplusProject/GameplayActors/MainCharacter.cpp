@@ -3,7 +3,6 @@
 
 #include "MainCharacter.h"
 
-#include "AnimationEditorViewportClient.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -11,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -98,6 +98,7 @@ void AMainCharacter::IncrementCoins(const int32 Amount)
 void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	UKismetSystemLibrary::DrawDebugSphere(this, GetActorLocation() + FVector(0.f, 0.f, 75.f), 25.0f, 200, FLinearColor::Red, 5.f, .2f);
 }
 
 // Called every frame
