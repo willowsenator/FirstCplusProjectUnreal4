@@ -68,6 +68,14 @@ AMainCharacter::AMainCharacter()
 	MinSprintStamina = 50.0f;
 }
 
+void AMainCharacter::ShowPickupLocations()
+{
+	for (auto const PickupLocation : PickupLocations)
+	{
+		UKismetSystemLibrary::DrawDebugSphere(this, PickupLocation, 25.0f, 40, FLinearColor::Green, 5.f, .2f);
+	}
+}
+
 void AMainCharacter::DecreaseHealth(const float Amount)
 {
 	if (Health - Amount <= 0.0f)
@@ -98,7 +106,6 @@ void AMainCharacter::IncrementCoins(const int32 Amount)
 void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	UKismetSystemLibrary::DrawDebugSphere(this, GetActorLocation() + FVector(0.f, 0.f, 75.f), 25.0f, 200, FLinearColor::Red, 5.f, .2f);
 }
 
 // Called every frame
