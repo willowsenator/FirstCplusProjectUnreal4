@@ -36,6 +36,10 @@ class FIRSTCPLUSPROJECT_API AMainCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AMainCharacter();
+	
+	TArray<FVector> PickupLocations;
+	UFUNCTION(BlueprintCallable)
+	void ShowPickupLocations();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Enums")
 	EMovementStatus MovementStatus;
@@ -116,13 +120,13 @@ public:
 	UInputAction* InputStopSprinting;
 	
 	/** PlayerStats */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Player Stats")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Player Stats")
 	float MaxHealth;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Player Stats")
 	float Health;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Player Stats")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Player Stats")
 	float MaxStamina;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Player Stats")
@@ -131,7 +135,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Player Stats")
 	int32 Coins;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Player Stats")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Player Stats")
 	int32 MaxCoins;
 
 	void DecreaseHealth(float Amount);
@@ -143,7 +147,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
