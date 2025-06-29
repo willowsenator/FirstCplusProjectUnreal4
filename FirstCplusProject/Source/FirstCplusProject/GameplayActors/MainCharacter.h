@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
+#include "Weapon.h"
 #include "MainCharacter.generated.h"
 
 UENUM(BlueprintType)
@@ -153,6 +154,12 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons")
+	AWeapon *EquippedWeapon;
+
+	FORCEINLINE void SetEquippedWeapon(AWeapon* NewWeapon) { EquippedWeapon = NewWeapon; }
+	
 private:
 	void Move(const FInputActionValue& Value);
 
@@ -192,7 +199,8 @@ private:
 	void StopSprinting(const FInputActionValue& Value);
 
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera;} 
+	
 
 	void HandleNotSprinting(const float DeltaStamina);
 	void HandleSprinting(const float DeltaStamina);
