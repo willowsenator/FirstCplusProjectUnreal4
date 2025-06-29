@@ -20,6 +20,7 @@ void AExplosive::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 		if (auto const MainCharacter = Cast<AMainCharacter>(OtherActor))
 		{
 			MainCharacter->DecreaseHealth(Damage);
+			Destroy();
 		}
 	}
 }
