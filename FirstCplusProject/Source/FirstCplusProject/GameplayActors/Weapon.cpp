@@ -11,6 +11,7 @@ AWeapon::AWeapon()
 {
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("WeaponMesh");
 	StaticMesh->SetupAttachment(GetRootComponent());
+	bParticleWeapon = false;
 }
 
 
@@ -58,6 +59,11 @@ void AWeapon::Equip(AMainCharacter* Char)
 		if (OnEquipSound)
 		{
 			UGameplayStatics::PlaySound2D(this, OnEquipSound);
+		}
+
+		if (!bParticleWeapon)
+		{
+			IdleParticlesComponent->Deactivate();
 		}
 	}
 }
