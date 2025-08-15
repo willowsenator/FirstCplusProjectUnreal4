@@ -158,7 +158,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons")
 	AWeapon *EquippedWeapon;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons")
+	AItem *ActiveOverlappingItem;
+
 	FORCEINLINE void SetEquippedWeapon(AWeapon* NewWeapon) { EquippedWeapon = NewWeapon; }
+	FORCEINLINE void SetActiveOverlappingItem(AItem* NewItem) { ActiveOverlappingItem = NewItem; }
 	
 private:
 	void Move(const FInputActionValue& Value);
