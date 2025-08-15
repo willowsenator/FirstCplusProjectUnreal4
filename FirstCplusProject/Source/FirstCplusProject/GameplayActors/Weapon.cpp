@@ -4,6 +4,8 @@
 #include "Weapon.h"
 #include "MainCharacter.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
 
 AWeapon::AWeapon()
 {
@@ -19,8 +21,8 @@ void AWeapon::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* O
 	{
 		if (AMainCharacter* MyCharacter = Cast<AMainCharacter>(OtherActor))
 		{
-			// If the character is valid, equip the weapon
-			Equip(MyCharacter);
+			// If the character is valid, set it as the active overlapping item
+			MyCharacter->ActiveOverlappingItem = this;
 		}
 	}
 	// Additional logic for weapon overlap can be added here
@@ -30,6 +32,11 @@ void AWeapon::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 {
 	Super::OnOverlapEnd(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
 	// Additional logic for weapon overlap end can be added here
+	if (AMainCharacter * MyCharacter = Cast<AMainCharacter>(OtherActor))
+	{
+		// If the character is valid, clear the active overlapping item
+		MyCharacter->ActiveOverlappingItem = nullptr;
+	}
 }
 
 void AWeapon::Equip(AMainCharacter* Char)
@@ -45,6 +52,12 @@ void AWeapon::Equip(AMainCharacter* Char)
 		{
 			RightHandSocket->AttachActor(this, Char->GetMesh());
 			bRotate = false;
+			Char->SetEquippedWeapon(this);
+		}
+
+		if (OnEquipSound)
+		{
+			UGameplayStatics::PlaySound2D(this, OnEquipSound);
 		}
 	}
 }
