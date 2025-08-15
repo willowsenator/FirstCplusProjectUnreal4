@@ -156,6 +156,9 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	                                   &AMainCharacter::StartSprinting);
 	EnhancedInputComponent->BindAction(InputStopSprinting, ETriggerEvent::Triggered, this,
 	                                   &AMainCharacter::StopSprinting);
+
+	EnhancedInputComponent->BindAction(InputLMBDown, ETriggerEvent::Triggered, this, &AMainCharacter::LMBDown);
+	EnhancedInputComponent->BindAction(InputLMBUp, ETriggerEvent::Triggered, this, &AMainCharacter::LMBUp);
 }
 
 void AMainCharacter::Move(const FInputActionValue& Value)
@@ -233,6 +236,32 @@ void AMainCharacter::StopSprinting(const FInputActionValue& Value)
 		bSprinting = false;
 	}
 }
+
+void AMainCharacter::LMBDown(const FInputActionValue& Value)
+{
+	if (Value.Get<bool>())
+	{
+		bLMB = true;
+		if (ActiveOverlappingItem)
+		{
+			if (AWeapon* Weapon = Cast<AWeapon>(ActiveOverlappingItem))
+			{
+				Weapon->Equip(this);
+				ActiveOverlappingItem = nullptr; // Clear the active overlapping item after equipping
+			}
+		}
+	}
+}
+
+void AMainCharacter::LMBUp(const FInputActionValue& Value)
+{
+	if (!Value.Get<bool>())
+	{
+		bLMB = false;
+	}
+}
+
+
 
 void AMainCharacter::SetMovementStatus(const EMovementStatus NewMovementStatus)
 {
