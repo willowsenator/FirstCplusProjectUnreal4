@@ -67,6 +67,8 @@ public:
 
 	bool bSprinting;
 
+	bool bLMB;
+
 	/** Camera boom positioning the camera behind the player */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivate = "true"))
 	class USpringArmComponent* CameraBoom;
@@ -119,6 +121,14 @@ public:
 	/*** Stop action for sprinting */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
 	UInputAction* InputStopSprinting;
+
+	/** LMB action for attacking and collecting items*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
+	UInputAction* InputLMBDown;
+
+	/** LMB action for stop from attacking and collecting items*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Enhanced Input")
+	UInputAction* InputLMBUp;
 	
 	/** PlayerStats */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Player Stats")
@@ -158,7 +168,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons")
 	AWeapon *EquippedWeapon;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons")
 	AItem *ActiveOverlappingItem;
 
 	FORCEINLINE void SetEquippedWeapon(AWeapon* NewWeapon) { EquippedWeapon = NewWeapon; }
@@ -201,6 +211,16 @@ private:
      * @param Value This is the input value for stopping the character from sprinting
      */
 	void StopSprinting(const FInputActionValue& Value);
+
+	/** Called via input to start attacking or collecting items
+	 * @param Value This is the input value for attacking or collecting items
+	 */
+	void LMBDown(const FInputActionValue& Value);
+
+	/** Called via input to stop attacking or collecting items
+	 * @param Value This is the input value for stopping from attacking or collecting items
+	 */
+	void LMBUp(const FInputActionValue& Value);
 
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera;} 
