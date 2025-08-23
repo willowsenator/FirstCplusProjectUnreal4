@@ -8,6 +8,13 @@
 
 class AMainCharacter;
 
+UENUM(BlueprintType)
+enum class EWeaponState: uint8
+{
+	Ews_Pickup UMETA(DisplayName = "Pickup"),
+	Ews_Equipped UMETA(DisplayName = "Equipped"),
+	Ews_Max UMETA(DisplayName = "DefaultMAX")
+};
 /**
  * 
  */
@@ -17,6 +24,7 @@ class FIRSTCPLUSPROJECT_API AWeapon : public AItem
 	GENERATED_BODY()
 public:
 	AWeapon();
+	EWeaponState WeaponState;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	UStaticMeshComponent* StaticMesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon | Sound")
@@ -27,4 +35,7 @@ public:
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	virtual void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
 	void Equip(AMainCharacter* Char);
+
+	FORCEINLINE void SetWeaponState(const EWeaponState NewWeaponState) { WeaponState = NewWeaponState; }
+	FORCEINLINE EWeaponState GetWeaponState() const { return WeaponState; }
 };

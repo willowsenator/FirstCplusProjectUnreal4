@@ -172,6 +172,7 @@ public:
 	AItem *ActiveOverlappingItem;
 
 	FORCEINLINE void SetEquippedWeapon(AWeapon* NewWeapon) { EquippedWeapon = NewWeapon; }
+	FORCEINLINE AWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
 	FORCEINLINE void SetActiveOverlappingItem(AItem* NewItem) { ActiveOverlappingItem = NewItem; }
 	
 private:
