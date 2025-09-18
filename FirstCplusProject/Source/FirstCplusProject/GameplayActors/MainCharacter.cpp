@@ -249,6 +249,9 @@ void AMainCharacter::LMBDown(const FInputActionValue& Value)
 				Weapon->Equip(this);
 				ActiveOverlappingItem = nullptr; // Clear the active overlapping item after equipping
 			}
+		} else if (EquippedWeapon)
+		{
+			Attack();
 		}
 	}
 }
@@ -357,4 +360,16 @@ void AMainCharacter::HandleNotSprinting(const float DeltaStamina)
 		break;
 	} 
 }
+
+void AMainCharacter::Attack()
+{
+	bAttacking = true;
+
+	if (UAnimInstance *AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
+	{
+		AnimInstance->Montage_Play(CombatMontage, 1.35f);
+		AnimInstance->Montage_JumpToSection(FName("Attack_1"), CombatMontage);
+	}
+}
+
 
