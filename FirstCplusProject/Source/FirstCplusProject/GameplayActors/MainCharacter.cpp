@@ -164,7 +164,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 void AMainCharacter::Move(const FInputActionValue& Value)
 {
 	const auto MoveValue = Value.Get<FVector2d>();
-	if (Controller == nullptr || MoveValue.X == 0.0f && MoveValue.Y == 0.0f)
+	if (Controller == nullptr || MoveValue.X == 0.0f && MoveValue.Y == 0.0f || bAttacking)
 	{
 		return;
 	}
@@ -363,12 +363,25 @@ void AMainCharacter::HandleNotSprinting(const float DeltaStamina)
 
 void AMainCharacter::Attack()
 {
+
+	if (bAttacking) return;
+	
 	bAttacking = true;
 
 	if (UAnimInstance *AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
 	{
 		AnimInstance->Montage_Play(CombatMontage, 1.35f);
 		AnimInstance->Montage_JumpToSection(FName("Attack_1"), CombatMontage);
+	}
+}
+
+void AMainCharacter::AttackEnd()
+{
+	bAttacking = false;
+
+	if (bLMB)
+	{
+		Attack();
 	}
 }
 
