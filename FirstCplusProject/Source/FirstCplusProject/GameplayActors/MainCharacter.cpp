@@ -118,7 +118,8 @@ void AMainCharacter::Tick(float DeltaTime)
 	if (bSprinting)
 	{
 		HandleSprinting(DeltaStamina);
-	} else
+	}
+	else
 	{
 		HandleNotSprinting(DeltaStamina);
 	}
@@ -216,10 +217,10 @@ void AMainCharacter::StartJumping(const FInputActionValue& Value)
 
 void AMainCharacter::StopJumping(const FInputActionValue& Value)
 {
-	    if (!Value.Get<bool>())
-	    {
-		    ACharacter::StopJumping();
-	    }
+	if (!Value.Get<bool>())
+	{
+		ACharacter::StopJumping();
+	}
 }
 
 void AMainCharacter::StartSprinting(const FInputActionValue& Value)
@@ -232,7 +233,8 @@ void AMainCharacter::StartSprinting(const FInputActionValue& Value)
 
 void AMainCharacter::StopSprinting(const FInputActionValue& Value)
 {
-	if (!Value.Get<bool>()) {
+	if (!Value.Get<bool>())
+	{
 		bSprinting = false;
 	}
 }
@@ -249,7 +251,8 @@ void AMainCharacter::LMBDown(const FInputActionValue& Value)
 				Weapon->Equip(this);
 				ActiveOverlappingItem = nullptr; // Clear the active overlapping item after equipping
 			}
-		} else if (EquippedWeapon)
+		}
+		else if (EquippedWeapon)
 		{
 			Attack();
 		}
@@ -263,7 +266,6 @@ void AMainCharacter::LMBUp(const FInputActionValue& Value)
 		bLMB = false;
 	}
 }
-
 
 
 void AMainCharacter::SetMovementStatus(const EMovementStatus NewMovementStatus)
@@ -358,20 +360,30 @@ void AMainCharacter::HandleNotSprinting(const float DeltaStamina)
 
 	default:
 		break;
-	} 
+	}
 }
 
 void AMainCharacter::Attack()
 {
-
 	if (bAttacking) return;
-	
+
 	bAttacking = true;
 
-	if (UAnimInstance *AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
 	{
-		AnimInstance->Montage_Play(CombatMontage, 1.35f);
-		AnimInstance->Montage_JumpToSection(FName("Attack_1"), CombatMontage);
+		switch (FMath::RandRange(0, 1))
+		{
+		case 0:
+			AnimInstance->Montage_Play(CombatMontage, 2.2f);
+			AnimInstance->Montage_JumpToSection(FName("Attack_1"), CombatMontage);
+			break;
+		case 1:
+			AnimInstance->Montage_Play(CombatMontage, 1.8f);
+			AnimInstance->Montage_JumpToSection(FName("Attack_2"), CombatMontage);
+			break;
+		default:
+			break;
+		}
 	}
 }
 
@@ -384,5 +396,3 @@ void AMainCharacter::AttackEnd()
 		Attack();
 	}
 }
-
-
