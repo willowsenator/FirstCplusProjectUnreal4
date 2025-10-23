@@ -3,7 +3,6 @@
 
 #include "Enemy.h"
 
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Navigation/PathFollowingComponent.h"
 
 // Sets default values
@@ -69,7 +68,13 @@ void AEnemy::AgroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AA
 
 void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
+	if (OtherActor)
+	{
+		if (AMainCharacter *MainCharacter = Cast<AMainCharacter>(OtherActor))
+		{
+			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Attacking);
+		}
+	}
 }
 
 void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -91,6 +96,14 @@ void AEnemy::MoveToTarget(AMainCharacter* Target)
 		FNavPathSharedPtr NavPath;
 
 		AIController->MoveTo(MoveRequest, &NavPath);
+
+		/** For DEBUG Purposes
+		 * for (auto PathPoints = NavPath->GetPathPoints(); const auto PathPoint : PathPoints)
+		{
+			const FVector Location = PathPoint.Location;
+
+			UKismetSystemLibrary::DrawDebugSphere(this, Location, 25.f, 8, FLinearColor::Green, 10.f, 1.5f);
+		}*/
 	}
 }
 
