@@ -64,6 +64,6 @@ public:
 	UFUNCTION()
 	virtual void CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	void MoveToTarget(AMainCharacter * Target);
+	void MoveToTarget(const AMainCharacter * Target);
 
 };
