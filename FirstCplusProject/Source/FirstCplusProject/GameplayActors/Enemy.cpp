@@ -35,7 +35,7 @@ void AEnemy::BeginPlay()
 }
 
 // Called every frame
-void AEnemy::Tick(float DeltaTime)
+void AEnemy::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -52,9 +52,7 @@ void AEnemy::AgroSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, 
 {
 	if (OtherActor)
 	{
-		AMainCharacter *MainCharacter = Cast<AMainCharacter>(OtherActor);
-
-		if (MainCharacter)
+		if (const AMainCharacter *MainCharacter = Cast<AMainCharacter>(OtherActor))
 		{
 			MoveToTarget(MainCharacter);
 		}
@@ -63,14 +61,24 @@ void AEnemy::AgroSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, 
 
 void AEnemy::AgroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-
+	if (OtherActor)
+	{
+		if (Cast<AMainCharacter>(OtherActor))
+		{
+			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
+			if (AIController)
+			{
+				AIController->StopMovement();
+			}
+		}
+	}
 }
 
 void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor)
 	{
-		if (AMainCharacter *MainCharacter = Cast<AMainCharacter>(OtherActor))
+		if (Cast<AMainCharacter>(OtherActor))
 		{
 			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Attacking);
 		}
@@ -79,10 +87,16 @@ void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent
 
 void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-
+	if (OtherActor)
+	{
+		if (const AMainCharacter *MainCharacter = Cast<AMainCharacter>(OtherActor))
+		{
+			MoveToTarget(MainCharacter);
+		}
+	}
 }
 
-void AEnemy::MoveToTarget(AMainCharacter* Target)
+void AEnemy::MoveToTarget(const AMainCharacter* Target)
 {
 	SetEnemyMovementStatus(EEnemyMovementStatus::EMS_MoveToTarget);
 
