@@ -7,8 +7,9 @@ public class FirstCplusProjectEditorTarget : TargetRules
 	public FirstCplusProjectEditorTarget( TargetInfo target) : base(target)
 	{
 		Type = TargetType.Editor;
-		DefaultBuildSettings = BuildSettingsVersion.V5;
+		DefaultBuildSettings = BuildSettingsVersion.Latest;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
+		
 		ExtraModuleNames.Add("FirstCplusProject");
 	}
 }
