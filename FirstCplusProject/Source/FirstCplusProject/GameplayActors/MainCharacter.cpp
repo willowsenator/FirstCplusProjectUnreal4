@@ -66,6 +66,12 @@ AMainCharacter::AMainCharacter()
 
 	StaminaDrainRate = 25.f;
 	MinSprintStamina = 50.0f;
+
+	// Initialize boolean flags
+	bIsDead = false;
+	bAttacking = false;
+	bSprinting = false;
+	bLMB = false;
 }
 
 void AMainCharacter::ShowPickupLocations()
@@ -91,7 +97,28 @@ void AMainCharacter::DecreaseHealth(const float Amount)
 
 void AMainCharacter::Die()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Player died"));
+	if (bIsDead) return;  // Prevent multiple deaths
+	
+	bIsDead = true;
+	
+	// Disable player input
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC)
+	{
+		DisableInput(PC);
+	}
+	
+	// Stop movement
+	GetCharacterMovement()->DisableMovement();
+	
+	// Disable collision
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	// TODO: Play death animation
+	// TODO: Trigger respawn timer
+	// TODO: Notify GameMode
+	
+	UE_LOG(LogTemp, Warning, TEXT("Player died at location: %s"), *GetActorLocation().ToString());
 }
 
 void AMainCharacter::IncrementCoins(const int32 Amount)
@@ -246,7 +273,8 @@ void AMainCharacter::LMBDown(const FInputActionValue& Value)
 		bLMB = true;
 		if (ActiveOverlappingItem)
 		{
-			if (AWeapon* Weapon = Cast<AWeapon>(ActiveOverlappingItem))
+			AWeapon* Weapon = Cast<AWeapon>(ActiveOverlappingItem);
+			if (Weapon)
 			{
 				Weapon->Equip(this);
 				ActiveOverlappingItem = nullptr; // Clear the active overlapping item after equipping
@@ -365,6 +393,12 @@ void AMainCharacter::HandleNotSprinting(const float DeltaStamina)
 
 void AMainCharacter::Attack()
 {
+	if (!EquippedWeapon)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Cannot attack - no weapon equipped"));
+		return;
+	}
+	
 	if (bAttacking) return;
 
 	bAttacking = true;

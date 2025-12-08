@@ -14,7 +14,14 @@ void AMainPlayerController::BeginPlay()
         HUDOverlay = CreateWidget<UUserWidget>(this, HUDOverlayAsset);
     }
 
-    HUDOverlay->AddToViewport();
-    HUDOverlay->SetVisibility(ESlateVisibility::Visible);
+    if (HUDOverlay)
+    {
+        HUDOverlay->AddToViewport();
+        HUDOverlay->SetVisibility(ESlateVisibility::Visible);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("HUDOverlay failed to create. Check HUDOverlayAsset."));
+    }
 }
 

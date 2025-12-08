@@ -18,7 +18,10 @@ AFloater::AFloater()
 	bInitializeFloaterLocations = false;
 	bShouldFloat = false;
 	BaseZLocation = 0.0f;
-	A, B, C, D = 0.f;
+	A = 0.f;
+	B = 0.f;
+	C = 0.f;
+	D = 0.f;
 }
 
 // Called when the game starts or when spawned

@@ -5,15 +5,15 @@
 
 ---
 
-## 🔴 PHASE 1: Critical Fixes (DO FIRST!)
+## 🔴 PHASE 1: Critical Fixes (DO FIRST!) ✅ COMPLETE
 
 ### ⚡ Crash Fixes
-- [ ] **MainPlayerController.cpp** - Add null check before `HUDOverlay->AddToViewport()`
-- [ ] **Floater.cpp** - Fix `A, B, C, D = 0.f;` → separate assignments
-- [ ] **MainCharacter.h** - Remove `static` from `Die()`, add `bool bIsDead`
-- [ ] **MainCharacter.cpp** - Implement proper `Die()` with input disable
-- [ ] **MainCharacter.cpp** - Add null check in `Attack()` for `EquippedWeapon`
-- [ ] **MainCharacter.cpp** - Add null check in `LMBDown()` for weapon cast
+- [x] **MainPlayerController.cpp** - Add null check before `HUDOverlay->AddToViewport()`
+- [x] **Floater.cpp** - Fix `A, B, C, D = 0.f;` → separate assignments
+- [x] **MainCharacter.h** - Remove `static` from `Die()`, add `bool bIsDead`
+- [x] **MainCharacter.cpp** - Implement proper `Die()` with input disable
+- [x] **MainCharacter.cpp** - Add null check in `Attack()` for `EquippedWeapon`
+- [x] **MainCharacter.cpp** - Add null check in `LMBDown()` for weapon cast
 
 **✅ Test:** Game launches, no crashes on death/attack/HUD
 
