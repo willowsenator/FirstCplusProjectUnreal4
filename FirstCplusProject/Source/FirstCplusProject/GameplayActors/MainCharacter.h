@@ -151,8 +151,12 @@ public:
 
 	void DecreaseHealth(float Amount);
 
-	static void Die();
+	void Die();
+	
 	void IncrementCoins(int32 Amount);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player Stats")
+	bool bIsDead;
 
 protected:
 	// Called when the game starts or when spawned
