@@ -19,13 +19,13 @@
 
 ---
 
-## 🟡 PHASE 2: High Priority Logic Fixes
+## 🟡 PHASE 2: High Priority Logic Fixes ✅ COMPLETE
 
-- [ ] **Enemy.cpp** - Fix `CombatSphereOnOverlapEnd()` - move `CombatTarget = nullptr` after usage
-- [ ] **Critter.cpp** - Move `CurrentVelocity` reset from `Tick()` to `Move()`
-- [ ] **Weapon.cpp** - Call `SetWeaponState(Ews_Equipped)` in `Equip()`
-- [ ] **MainCharacter.cpp** - Fix `StartSprinting()` - check exhausted state, remove velocity check
-- [ ] **MainCharacter.cpp** - Update `StopSprinting()` - check if dead
+- [x] **Enemy.cpp** - Fix `CombatSphereOnOverlapEnd()` - move `CombatTarget = nullptr` after usage
+- [x] **Critter.cpp** - Move `CurrentVelocity` reset from `Tick()` to `Move()`
+- [x] **Weapon.cpp** - Call `SetWeaponState(Ews_Equipped)` in `Equip()`
+- [x] **MainCharacter.cpp** - Fix `StartSprinting()` - check exhausted state, remove velocity check
+- [x] **MainCharacter.cpp** - Update `StopSprinting()` - check if dead
 
 **✅ Test:** Combat works, movement smooth, sprint logic correct
 
