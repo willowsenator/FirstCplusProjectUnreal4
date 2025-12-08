@@ -252,15 +252,32 @@ void AMainCharacter::StopJumping(const FInputActionValue& Value)
 
 void AMainCharacter::StartSprinting(const FInputActionValue& Value)
 {
-	if (Value.Get<bool>() && GetVelocity().Size() > 0.0f && Stamina > 0.0f)
+	if (Value.Get<bool>())
 	{
-		bSprinting = true;
+		// Can't sprint if exhausted
+		if (StaminaStatus == EStaminaStatus::ESS_Exhausted || 
+			StaminaStatus == EStaminaStatus::ESS_ExhaustedRecovering)
+		{
+			return;
+		}
+		
+		// Can't sprint if dead
+		if (bIsDead)
+		{
+			return;
+		}
+		
+		// Can sprint even when standing still (will activate when moving)
+		if (Stamina > 0.0f)
+		{
+			bSprinting = true;
+		}
 	}
 }
 
 void AMainCharacter::StopSprinting(const FInputActionValue& Value)
 {
-	if (!Value.Get<bool>())
+	if (!Value.Get<bool>() || bIsDead)
 	{
 		bSprinting = false;
 	}

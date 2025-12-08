@@ -93,14 +93,17 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
 {
 	if (OtherActor)
 	{
-		if (const AMainCharacter *MainCharacter = Cast<AMainCharacter>(OtherActor))
+		if (const AMainCharacter* MainCharacter = Cast<AMainCharacter>(OtherActor))
 		{
 			bOverlappingCombatSphere = false;
+			
 			if (EnemyMovementStatus != EEnemyMovementStatus::EMS_Attacking)
 			{
 				MoveToTarget(MainCharacter);
-				CombatTarget = nullptr;
 			}
+			
+			// Clear combat target after using it
+			CombatTarget = nullptr;
 		}
 	}
 }

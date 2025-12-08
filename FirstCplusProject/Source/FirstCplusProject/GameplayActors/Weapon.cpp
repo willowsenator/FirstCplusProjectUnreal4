@@ -45,6 +45,9 @@ void AWeapon::Equip(AMainCharacter* Char)
 {
 	if (Char)
 	{
+		// Update weapon state first
+		SetWeaponState(EWeaponState::Ews_Equipped);
+		
 		StaticMesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 		StaticMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 

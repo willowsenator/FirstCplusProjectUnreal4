@@ -32,10 +32,12 @@ void ACritter::BeginPlay()
 void ACritter::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	const FVector NewLocation = GetActorLocation() + (CurrentVelocity * DeltaTime);
-	SetActorLocation(NewLocation);
-	// Reset CurrentVelocity to zero initially
-	CurrentVelocity = FVector(0.0f);
+	
+	if (!CurrentVelocity.IsNearlyZero())
+	{
+		const FVector NewLocation = GetActorLocation() + (CurrentVelocity * DeltaTime);
+		SetActorLocation(NewLocation);
+	}
 }
 
 // Called to bind functionality to input
@@ -60,6 +62,9 @@ void ACritter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void ACritter::Move(const FInputActionValue& Value)
 {
+	// Reset velocity at start of input
+	CurrentVelocity = FVector(0.0f);
+	
 	if (Controller != nullptr)
 	{
 		const FVector2d MoveValue = Value.Get<FVector2d>();
@@ -69,7 +74,6 @@ void ACritter::Move(const FInputActionValue& Value)
 		if (MoveValue.Y != 0.f)
 		{
 			const FVector Direction = MoveRotation.RotateVector(FVector::ForwardVector);
-			AddMovementInput(Direction, MoveValue.Y);
 			CurrentVelocity.Y = FMath::Clamp(MoveValue.Y, -1.0f, 1.0f) * MaxSpeed;
 		} 
 
@@ -77,7 +81,6 @@ void ACritter::Move(const FInputActionValue& Value)
 		if(MoveValue.X != 0.f)
 		{
 			const FVector Direction = MoveRotation.RotateVector(FVector::RightVector);
-			AddMovementInput(Direction, MoveValue.X);
 			CurrentVelocity.X = FMath::Clamp(MoveValue.X, -1.0f, 1.0f) * MaxSpeed;
 		}
 	}
