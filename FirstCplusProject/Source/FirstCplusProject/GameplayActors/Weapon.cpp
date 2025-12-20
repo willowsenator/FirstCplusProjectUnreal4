@@ -3,6 +3,7 @@
 
 #include "Weapon.h"
 #include "MainCharacter.h"
+#include "Components/BoxComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
@@ -11,7 +12,12 @@ AWeapon::AWeapon()
 {
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("WeaponMesh");
 	StaticMesh->SetupAttachment(GetRootComponent());
+	
+	CombatCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("CombatCollision"));
+	CombatCollision->SetupAttachment(GetRootComponent());
+	
 	bParticleWeapon = false;
+	
 	WeaponState = EWeaponState::Ews_Pickup;
 }
 
