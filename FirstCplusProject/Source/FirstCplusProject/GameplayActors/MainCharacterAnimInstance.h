@@ -7,6 +7,8 @@
 #include "Animation/AnimInstance.h"
 #include "MainCharacterAnimInstance.generated.h"
 
+class UBlendSpace;
+
 /**
  * 
  */
@@ -26,6 +28,9 @@ public:
 	float MovementSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement)
+	float Direction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement)
 	bool bIsInAir;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement)
@@ -33,4 +38,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement)
 	AMainCharacter* MainCharacter;
+
+	// Expose a BlendSpace asset so you can set it in the AnimBlueprint class defaults
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UBlendSpace* LocomotionBlendSpace;
 };

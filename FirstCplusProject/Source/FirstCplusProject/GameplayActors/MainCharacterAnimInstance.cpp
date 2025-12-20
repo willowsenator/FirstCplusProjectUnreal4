@@ -26,9 +26,22 @@ void UMainCharacterAnimInstance::UpdateAnimationProperties()
 
 	if (Pawn)
 	{
-		const FVector Speed = Pawn->GetVelocity();
-		const FVector LateralSpeed = FVector(Speed.X, Speed.Y, 0.0f);
-		MovementSpeed = LateralSpeed.Size();
+		const FVector Velocity = Pawn->GetVelocity();
+		const FVector LateralVelocity = FVector(Velocity.X, Velocity.Y, 0.0f);
+		MovementSpeed = LateralVelocity.Size();
+
+		// Calculate Direction (degrees) relative to actor forward without using UKismet helpers
+		if (LateralVelocity.SizeSquared() > 0.f)
+		{
+			// Transform world velocity into the actor's local space
+			const FRotator ActorRotation = Pawn->GetActorRotation();
+			const FVector LocalVelocity = ActorRotation.UnrotateVector(LateralVelocity);
+			Direction = FMath::RadiansToDegrees(FMath::Atan2(LocalVelocity.Y, LocalVelocity.X));
+		}
+		else
+		{
+			Direction = 0.f;
+		}
 
 		bIsInAir = Pawn->GetMovementComponent()->IsFalling();
 
@@ -38,4 +51,3 @@ void UMainCharacterAnimInstance::UpdateAnimationProperties()
 		}
 	}
 }
-
