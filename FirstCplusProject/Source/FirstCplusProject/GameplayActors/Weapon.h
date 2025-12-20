@@ -7,6 +7,10 @@
 #include "Weapon.generated.h"
 
 class AMainCharacter;
+// Forward declarations for component and sound types used in this header
+class UStaticMeshComponent;
+class UBoxComponent;
+class USoundCue;
 
 UENUM(BlueprintType)
 enum class EWeaponState: uint8
@@ -27,6 +31,10 @@ public:
 	EWeaponState WeaponState;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	UStaticMeshComponent* StaticMesh;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon | Combat")
+	UBoxComponent* CombatCollision;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon | Sound")
 	USoundCue* OnEquipSound;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon | Particles")
