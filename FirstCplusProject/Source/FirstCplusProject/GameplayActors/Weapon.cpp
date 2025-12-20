@@ -13,7 +13,7 @@ AWeapon::AWeapon()
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("WeaponMesh");
 	StaticMesh->SetupAttachment(GetRootComponent());
 	
-	CombatCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("CombatCollision"));
+	CombatCollision = CreateDefaultSubobject<UBoxComponent>("CombatCollision");
 	CombatCollision->SetupAttachment(GetRootComponent());
 	
 	bParticleWeapon = false;
