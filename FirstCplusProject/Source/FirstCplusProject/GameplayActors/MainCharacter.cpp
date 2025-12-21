@@ -11,6 +11,7 @@
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "TimerManager.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -420,26 +421,52 @@ void AMainCharacter::Attack()
 
 	bAttacking = true;
 
+	// Enable weapon collision for the attack window
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->ActivateCollision();
+	}
+
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
 	{
+		float PlayRate = 1.0f;
 		switch (FMath::RandRange(0, 1))
 		{
 		case 0:
-			AnimInstance->Montage_Play(CombatMontage, 2.2f);
+			PlayRate = 2.2f;
+			AnimInstance->Montage_Play(CombatMontage, PlayRate);
 			AnimInstance->Montage_JumpToSection(FName("Attack_1"), CombatMontage);
 			break;
 		case 1:
-			AnimInstance->Montage_Play(CombatMontage, 1.8f);
+			PlayRate = 1.8f;
+			AnimInstance->Montage_Play(CombatMontage, PlayRate);
 			AnimInstance->Montage_JumpToSection(FName("Attack_2"), CombatMontage);
 			break;
 		default:
 			break;
+		}
+		// Fallback timer: schedule AttackEnd based on montage length and play rate
+		if (CombatMontage)
+		{
+			const float MontageLength = CombatMontage->GetPlayLength();
+			const float Duration = MontageLength / PlayRate;
+			GetWorldTimerManager().SetTimer(AttackTimer, this, &AMainCharacter::AttackEnd, Duration, false);
+			UE_LOG(LogTemp, Warning, TEXT("AMainCharacter::Attack - Fallback timer set for %f seconds"), Duration);
 		}
 	}
 }
 
 void AMainCharacter::AttackEnd()
 {
+	// Clear the fallback timer if it exists
+	GetWorldTimerManager().ClearTimer(AttackTimer);
+
+	// Disable weapon collision when the attack finishes
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->DeactivateCollision();
+	}
+
 	bAttacking = false;
 
 	if (bLMB)

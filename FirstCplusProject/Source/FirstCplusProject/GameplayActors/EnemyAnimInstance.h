@@ -30,3 +30,4 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement)
 	AEnemy* Enemy;
 };
+

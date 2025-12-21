@@ -11,7 +11,10 @@
 
 #include "Enemy.generated.h"
 
-UENUM(Blueprintable)
+
+class UNiagaraSystem;
+
+UENUM(BlueprintType)
 enum class EEnemyMovementStatus : uint8
 {
 	EMS_Idle UMETA(DisplayName = "Idle"),
@@ -42,6 +45,18 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
 	AAIController *AIController;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	float Health;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	float MaxHealth;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	float Damage;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	UNiagaraSystem *HitParticles;
 
 protected:
 	// Called when the game starts or when spawned

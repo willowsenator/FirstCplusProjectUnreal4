@@ -193,6 +193,8 @@ public:
 	
 private:
 	void Move(const FInputActionValue& Value);
+    // Timer to ensure AttackEnd is called if animation notify is missing
+    FTimerHandle AttackTimer;
 
 	/** Called via input to and turn the character at rates
 	* @param Rate This is a normalized rate, i.e. 1.0 means 100% of desired look up/down rate
