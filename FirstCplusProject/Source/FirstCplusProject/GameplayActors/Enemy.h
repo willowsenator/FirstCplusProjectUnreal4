@@ -12,7 +12,7 @@
 #include "Enemy.generated.h"
 
 
-class UNiagaraSystem;
+class UParticleSystem;
 
 UENUM(BlueprintType)
 enum class EEnemyMovementStatus : uint8
@@ -56,7 +56,7 @@ public:
 	float Damage;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
-	UNiagaraSystem *HitParticles;
+	UParticleSystem *HitParticles;
 
 protected:
 	// Called when the game starts or when spawned

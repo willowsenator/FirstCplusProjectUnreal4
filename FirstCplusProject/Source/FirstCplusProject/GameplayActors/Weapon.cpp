@@ -5,7 +5,6 @@
 
 #include "Enemy.h"
 #include "MainCharacter.h"
-#include "NiagaraFunctionLibrary.h"
 #include "Components/BoxComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Sound/SoundCue.h"
@@ -19,7 +18,7 @@ AWeapon::AWeapon()
 	
 	CombatCollision = CreateDefaultSubobject<UBoxComponent>("CombatCollision");
 	// Attach the collision to the StaticMesh so it follows the mesh transforms when the actor is attached to a socket
-	CombatCollision->SetupAttachment(GetRootComponent());
+	CombatCollision->SetupAttachment(StaticMesh);
 	// Ensure the box collision is active for overlaps
 	CombatCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	CombatCollision->SetCollisionObjectType(ECC_WorldDynamic);
@@ -130,7 +129,8 @@ void AWeapon::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 	{
 		if (Enemy->HitParticles)
 		{
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), Enemy->HitParticles, GetActorLocation(), FRotator(0.f), FVector(1.f), false, true, ENCPoolMethod::ManualRelease);
+			const UStaticMeshSocket* WeaponSocket = StaticMesh->GetSocketByName("WeaponSocket");
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Enemy->HitParticles, GetActorLocation(), FRotator(0.f), FVector(1.f), false);
 		}
 		// Optionally apply damage here
 	}
