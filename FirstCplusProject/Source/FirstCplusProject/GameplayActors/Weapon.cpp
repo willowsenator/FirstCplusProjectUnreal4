@@ -6,7 +6,8 @@
 #include "Enemy.h"
 #include "MainCharacter.h"
 #include "Components/BoxComponent.h"
-#include "Engine/SkeletalMeshSocket.h"
+#include "Components/StaticMeshComponent.h" // for UStaticMeshComponent declarations
+#include "Engine/SkeletalMeshSocket.h" // for USkeletalMeshSocket
 #include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
@@ -19,13 +20,6 @@ AWeapon::AWeapon()
 	CombatCollision = CreateDefaultSubobject<UBoxComponent>("CombatCollision");
 	// Attach the collision to the StaticMesh so it follows the mesh transforms when the actor is attached to a socket
 	CombatCollision->SetupAttachment(StaticMesh);
-	// Ensure the box collision is active for overlaps
-	CombatCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	CombatCollision->SetCollisionObjectType(ECC_WorldDynamic);
-	// Start with ignoring everything then enable overlap with Pawns
-	CombatCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
-	CombatCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	CombatCollision->SetGenerateOverlapEvents(true);
 	// Default extent in case user didn't set it in the editor (helps debugging)
 	CombatCollision->SetBoxExtent(FVector(32.f, 8.f, 8.f));
 	
@@ -41,12 +35,13 @@ void AWeapon::BeginPlay()
 	Super::BeginPlay();
 	CombatCollision->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::CombatOnOverlapBegin);
 	CombatCollision->OnComponentEndOverlap.AddDynamic(this, &AWeapon::CombatOnOverlapEnd);
-	// Debug: print collision state and extent
-	if (CombatCollision)
-	{
-		const auto Enabled = CombatCollision->GetCollisionEnabled() == ECollisionEnabled::QueryOnly ? TEXT("QueryOnly") : (CombatCollision->GetCollisionEnabled() == ECollisionEnabled::NoCollision ? TEXT("NoCollision") : TEXT("PhysicsAndQuery"));
-		UE_LOG(LogTemp, Warning, TEXT("AWeapon::BeginPlay - CombatCollision Enabled=%s Extent=%s Loc=%s Rot=%s"), Enabled, *CombatCollision->GetScaledBoxExtent().ToString(), *CombatCollision->GetComponentLocation().ToString(), *CombatCollision->GetComponentRotation().ToString());
-	}
+	
+	// Ensure the box collision is active for overlaps
+	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CombatCollision->SetCollisionObjectType(ECC_WorldDynamic);
+	// Start with ignoring everything then enable overlap with Pawns
+	CombatCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	CombatCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 }
 
 
@@ -118,7 +113,6 @@ void AWeapon::Equip(AMainCharacter* Char)
 void AWeapon::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) 
 {
-	
 	// Ignore hits on the weapon owner (e.g., the player)
 	if (OtherActor == GetOwner())
 	{
@@ -129,8 +123,13 @@ void AWeapon::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 	{
 		if (Enemy->HitParticles)
 		{
-			const UStaticMeshSocket* WeaponSocket = StaticMesh->GetSocketByName("WeaponSocket");
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Enemy->HitParticles, GetActorLocation(), FRotator(0.f), FVector(1.f), false);
+			
+			// Prefer socket location on the static mesh if it exists
+			if (StaticMesh && StaticMesh->GetSocketByName("WeaponSocket"))
+			{
+				const FVector SocketLocation = StaticMesh->GetSocketLocation(TEXT("WeaponSocket"));
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Enemy->HitParticles, SocketLocation, FRotator::ZeroRotator, FVector(1.f), false);
+			}
 		}
 		// Optionally apply damage here
 	}
@@ -147,9 +146,6 @@ void AWeapon::ActivateCollision() const
 	if (CombatCollision)
 	{
 		CombatCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		CombatCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
-		CombatCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-		CombatCollision->SetGenerateOverlapEvents(true);
 	}
 }
 
@@ -158,6 +154,5 @@ void AWeapon::DeactivateCollision() const
 	if (CombatCollision)
 	{
 		CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		CombatCollision->SetGenerateOverlapEvents(false);
 	}
 }

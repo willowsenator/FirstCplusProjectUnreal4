@@ -58,10 +58,9 @@ public:
 	UFUNCTION()
 	void CombatOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	// Enable or disable the combat collision during attack windows
-	UFUNCTION(BlueprintCallable, Category = "Weapon | Combat")
+	UFUNCTION(BlueprintCallable)
 	void ActivateCollision() const;
-	UFUNCTION(BlueprintCallable, Category = "Weapon | Combat")
+	
+	UFUNCTION(BlueprintCallable)
 	void DeactivateCollision() const;
-
 };

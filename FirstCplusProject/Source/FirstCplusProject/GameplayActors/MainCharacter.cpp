@@ -421,12 +421,6 @@ void AMainCharacter::Attack()
 
 	bAttacking = true;
 
-	// Enable weapon collision for the attack window
-	if (EquippedWeapon)
-	{
-		EquippedWeapon->ActivateCollision();
-	}
-
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
 	{
 		float PlayRate = 1.0f;
@@ -445,28 +439,11 @@ void AMainCharacter::Attack()
 		default:
 			break;
 		}
-		// Fallback timer: schedule AttackEnd based on montage length and play rate
-		if (CombatMontage)
-		{
-			const float MontageLength = CombatMontage->GetPlayLength();
-			const float Duration = MontageLength / PlayRate;
-			GetWorldTimerManager().SetTimer(AttackTimer, this, &AMainCharacter::AttackEnd, Duration, false);
-			UE_LOG(LogTemp, Warning, TEXT("AMainCharacter::Attack - Fallback timer set for %f seconds"), Duration);
-		}
 	}
 }
 
 void AMainCharacter::AttackEnd()
 {
-	// Clear the fallback timer if it exists
-	GetWorldTimerManager().ClearTimer(AttackTimer);
-
-	// Disable weapon collision when the attack finishes
-	if (EquippedWeapon)
-	{
-		EquippedWeapon->DeactivateCollision();
-	}
-
 	bAttacking = false;
 
 	if (bLMB)
