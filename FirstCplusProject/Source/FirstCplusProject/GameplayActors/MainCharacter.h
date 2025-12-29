@@ -191,6 +191,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anims")
 	UAnimMontage *CombatMontage;
 	
+	UFUNCTION(BlueprintCallable)
+	void PlaySwingSound() const;
+	
 private:
 	void Move(const FInputActionValue& Value);
     // Timer to ensure AttackEnd is called if animation notify is missing

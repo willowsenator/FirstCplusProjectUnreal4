@@ -130,10 +130,10 @@ void AWeapon::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 		}
 		// Optionally apply damage here
 		
-		/*if (Enemy->HitSound)
+		if (Enemy->HitSound)
 		{
 			UGameplayStatics::PlaySound2D(this, Enemy->HitSound);
-		}*/
+		}
 	}
 }
 

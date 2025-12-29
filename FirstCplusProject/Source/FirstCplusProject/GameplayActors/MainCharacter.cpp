@@ -442,11 +442,6 @@ void AMainCharacter::Attack()
 			break;
 		}
 	}
-	
-	if (EquippedWeapon->SwingSound)
-	{
-		UGameplayStatics::PlaySound2D(this, EquippedWeapon->SwingSound);
-	}
 }
 
 void AMainCharacter::AttackEnd()
@@ -456,5 +451,13 @@ void AMainCharacter::AttackEnd()
 	if (bLMB)
 	{
 		Attack();
+	}
+}
+
+void AMainCharacter::PlaySwingSound() const
+{
+	if (EquippedWeapon->SwingSound)
+	{
+		UGameplayStatics::PlaySound2D(this, EquippedWeapon->SwingSound);
 	}
 }
