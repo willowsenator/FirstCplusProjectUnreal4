@@ -12,6 +12,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -423,7 +425,7 @@ void AMainCharacter::Attack()
 
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
 	{
-		float PlayRate = 1.0f;
+		float PlayRate;
 		switch (FMath::RandRange(0, 1))
 		{
 		case 0:
@@ -439,6 +441,11 @@ void AMainCharacter::Attack()
 		default:
 			break;
 		}
+	}
+	
+	if (EquippedWeapon->SwingSound)
+	{
+		UGameplayStatics::PlaySound2D(this, EquippedWeapon->SwingSound);
 	}
 }
 

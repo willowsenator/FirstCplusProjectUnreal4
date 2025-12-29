@@ -13,6 +13,7 @@
 
 
 class UParticleSystem;
+class USoundCue;
 
 UENUM(BlueprintType)
 enum class EEnemyMovementStatus : uint8
@@ -57,6 +58,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
 	UParticleSystem *HitParticles;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	USoundCue* HitSound;
 
 protected:
 	// Called when the game starts or when spawned

@@ -10,7 +10,6 @@
 #include "Engine/SkeletalMeshSocket.h" // for USkeletalMeshSocket
 #include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
-#include "DrawDebugHelpers.h"
 
 AWeapon::AWeapon()
 {
@@ -42,6 +41,10 @@ void AWeapon::BeginPlay()
 	// Start with ignoring everything then enable overlap with Pawns
 	CombatCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
 	CombatCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	// Allow overlap events
+	CombatCollision->SetGenerateOverlapEvents(true);
+	// Additional initialization if needed
+	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 
@@ -113,17 +116,11 @@ void AWeapon::Equip(AMainCharacter* Char)
 void AWeapon::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) 
 {
-	// Ignore hits on the weapon owner (e.g., the player)
-	if (OtherActor == GetOwner())
-	{
-		return;
-	}
-
+	if (OtherActor == GetOwner()) return; // Ignore if overlapping with the weapon's owner
 	if (const AEnemy *Enemy = Cast<AEnemy>(OtherActor); Enemy)
 	{
 		if (Enemy->HitParticles)
 		{
-			
 			// Prefer socket location on the static mesh if it exists
 			if (StaticMesh && StaticMesh->GetSocketByName("WeaponSocket"))
 			{
@@ -132,6 +129,11 @@ void AWeapon::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 			}
 		}
 		// Optionally apply damage here
+		
+		/*if (Enemy->HitSound)
+		{
+			UGameplayStatics::PlaySound2D(this, Enemy->HitSound);
+		}*/
 	}
 }
 
