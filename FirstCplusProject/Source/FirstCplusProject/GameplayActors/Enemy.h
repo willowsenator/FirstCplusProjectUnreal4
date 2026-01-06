@@ -61,6 +61,14 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
 	USoundCue* HitSound;
+	
+	bool bCanAttack;
+	
+	UFUNCTION(BlueprintCallable)
+	void AttackEnd();
+	
+	UFUNCTION(BlueprintCallable)
+	void Attack();
 
 protected:
 	// Called when the game starts or when spawned

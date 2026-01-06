@@ -24,6 +24,8 @@ AEnemy::AEnemy()
 	Health = 75.f;
 	MaxHealth = 100.f;
 	Damage = 10.f;
+	
+	bCanAttack = true;
 }
 
 // Called when the game starts or when spawned
@@ -44,7 +46,6 @@ void AEnemy::BeginPlay()
 void AEnemy::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -100,14 +101,23 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
 		if (const AMainCharacter* MainCharacter = Cast<AMainCharacter>(OtherActor))
 		{
 			bOverlappingCombatSphere = false;
-			
-			if (EnemyMovementStatus != EEnemyMovementStatus::EMS_Attacking)
+
+			// Only act if the leaving pawn was our combat target
+			if (CombatTarget == MainCharacter)
 			{
+				// If we're mid-attack (can't attack right now), schedule MoveToTarget after a short delay
+				if (!bCanAttack)
+				{
+					FTimerHandle IdleTimerHandle;
+					FTimerDelegate IdleTimerDelegate;
+					IdleTimerDelegate.BindUFunction(this, FName("SetEnemyMovementStatus"), EEnemyMovementStatus::EMS_Idle);
+					GetWorldTimerManager().SetTimer(IdleTimerHandle, IdleTimerDelegate, 0.5f, false);
+				}
 				MoveToTarget(MainCharacter);
+
+				// Clear combat target reference when the pawn leaves the combat sphere
+				CombatTarget = nullptr;
 			}
-			
-			// Clear combat target after using it
-			CombatTarget = nullptr;
 		}
 	}
 }
@@ -137,3 +147,22 @@ void AEnemy::MoveToTarget(const AMainCharacter* Target)
 	}
 }
 
+void AEnemy::AttackEnd()
+{
+	bCanAttack = true;
+
+	if (bOverlappingCombatSphere && CombatTarget)
+	{
+		SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
+		FTimerHandle TimerHandle;
+		GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemy::Attack, FMath::RandRange(0.5f, 1.2f), false);
+	}
+}
+
+void AEnemy::Attack()
+{
+	if (!bCanAttack || !CombatTarget) return;
+	bCanAttack = false;
+	SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Attacking);
+	
+}
