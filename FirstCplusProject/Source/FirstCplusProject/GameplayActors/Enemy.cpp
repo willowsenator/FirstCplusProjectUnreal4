@@ -3,7 +3,11 @@
 
 #include "Enemy.h"
 
+#include "Components/BoxComponent.h"
+#include "Engine/SkeletalMeshSocket.h"
+#include "Kismet/GameplayStatics.h"
 #include "Navigation/PathFollowingComponent.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -13,11 +17,14 @@ AEnemy::AEnemy()
 
 	AgroSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AgroSphere"));
 	AgroSphere->SetupAttachment(GetRootComponent());
-	AgroSphere->SetSphereRadius(600.f);
+	AgroSphere->InitSphereRadius(600.f);
 
 	CombatSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CombatSphere"));
 	CombatSphere->SetupAttachment(GetRootComponent());
-	CombatSphere->SetSphereRadius(75.f);
+	CombatSphere->InitSphereRadius(75.f);
+	
+	CombatCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("CombatCollision"));
+	CombatCollision->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("weapon_socket"));
 
 	bOverlappingCombatSphere = false;
 	
@@ -40,6 +47,17 @@ void AEnemy::BeginPlay()
 
 	CombatSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::CombatSphereOnOverlapBegin);
 	CombatSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemy::CombatSphereOnOverlapEnd);
+	
+	// Ensure the box collision is active for overlaps
+	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CombatCollision->SetCollisionObjectType(ECC_WorldDynamic);
+	// Start with ignoring everything then enable overlap with Pawns
+	CombatCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	CombatCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	// Allow overlap events
+	CombatCollision->SetGenerateOverlapEvents(true);
+	// Additional initialization if needed
+	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 // Called every frame
@@ -89,7 +107,7 @@ void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent
 		{
 			bOverlappingCombatSphere = true;
 			CombatTarget = MainCharacter;
-			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Attacking);
+			Attack();
 		}
 	}
 }
@@ -161,8 +179,70 @@ void AEnemy::AttackEnd()
 
 void AEnemy::Attack()
 {
-	if (!bCanAttack || !CombatTarget) return;
-	bCanAttack = false;
-	SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Attacking);
+	if (AIController)
+	{
+		AIController->StopMovement();
+		SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Attacking);
+	}
+
+	if (bCanAttack){
+		bCanAttack = false;
+		if (UAnimInstance *AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
+		{
+			AnimInstance->Montage_Play(CombatMontage, 1.35f);
+			AnimInstance->Montage_JumpToSection(FName("Attack"), CombatMontage);
+			
+			if (SwingSound)
+			{
+				UGameplayStatics::PlaySound2D(this, SwingSound);
+			}
+		}
+	}
 	
+}
+
+void AEnemy::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) 
+{
+	if (OtherActor == GetOwner()) return; // Ignore if overlapping with the weapon's owner
+	if (const AMainCharacter *MainCharacter = Cast<AMainCharacter>(OtherActor); MainCharacter)
+	{
+		if (MainCharacter->HitParticles)
+		{
+			// Prefer socket location on the static mesh if it exists
+			if (const USkeletalMeshSocket* TipSocket = GetMesh()->GetSocketByName("TipSocket"))
+			{
+				const FVector SocketLocation = TipSocket->GetSocketLocation(GetMesh());
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MainCharacter->HitParticles, SocketLocation, FRotator::ZeroRotator, FVector(1.f), false);
+			}
+		}
+		// Optionally apply damage here
+		
+		if (MainCharacter->HitSound)
+		{
+			UGameplayStatics::PlaySound2D(this, MainCharacter->HitSound);
+		}
+	}
+}
+
+void AEnemy::CombatOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+								 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	UE_LOG(LogTemp, Warning, TEXT("AWeapon::CombatOnOverlapEnd()") );
+}
+
+void AEnemy::ActivateCollision() const
+{
+	if (CombatCollision)
+	{
+		CombatCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}
+}
+
+void AEnemy::DeactivateCollision() const
+{
+	if (CombatCollision)
+	{
+		CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 }

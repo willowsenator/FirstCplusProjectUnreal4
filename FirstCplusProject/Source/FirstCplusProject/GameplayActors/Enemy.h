@@ -14,6 +14,8 @@
 
 class UParticleSystem;
 class USoundCue;
+class UBoxComponent;
+class UAnimMontage;
 
 UENUM(BlueprintType)
 enum class EEnemyMovementStatus : uint8
@@ -62,6 +64,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
 	USoundCue* HitSound;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	USoundCue* SwingSound;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Combat")
+	UBoxComponent* CombatCollision;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	UAnimMontage* CombatMontage;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat")
 	bool bCanAttack;
 	
 	UFUNCTION(BlueprintCallable)
@@ -90,6 +102,12 @@ public:
 	virtual void CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	virtual void CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	
+	UFUNCTION()
+	virtual void CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	UFUNCTION()
+	virtual void CombatOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UFUNCTION(BlueprintCallable )
 	void MoveToTarget(const AMainCharacter * Target);
@@ -99,4 +117,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="AI")
 	AMainCharacter *CombatTarget;
+	
+	UFUNCTION(BlueprintCallable)
+	void ActivateCollision() const;
+	
+	UFUNCTION(BlueprintCallable)
+	void DeactivateCollision() const;
 };

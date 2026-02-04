@@ -9,6 +9,12 @@
 #include "Weapon.h"
 #include "MainCharacter.generated.h"
 
+
+class UParticleSystem;
+class USoundCue;
+class UBoxComponent;
+
+
 UENUM(BlueprintType)
 enum class EMovementStatus : uint8
 {
@@ -181,6 +187,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Anims")
 	bool bAttacking;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	UParticleSystem *HitParticles;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	USoundCue* HitSound;
 
 	
 	void Attack();
