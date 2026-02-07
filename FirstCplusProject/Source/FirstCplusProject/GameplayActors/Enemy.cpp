@@ -27,7 +27,9 @@ AEnemy::AEnemy()
 	CombatCollision->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("weapon_socket"));
 
 	bOverlappingCombatSphere = false;
-	
+	CombatTarget = nullptr;
+	EnemyMovementStatus = EEnemyMovementStatus::EMS_Idle;
+
 	Health = 75.f;
 	MaxHealth = 100.f;
 	Damage = 10.f;
@@ -78,8 +80,9 @@ void AEnemy::AgroSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, 
 {
 	if (OtherActor)
 	{
-		if (const AMainCharacter *MainCharacter = Cast<AMainCharacter>(OtherActor))
+		if (AMainCharacter* MainCharacter = Cast<AMainCharacter>(OtherActor))
 		{
+			CombatTarget = MainCharacter;
 			MoveToTarget(MainCharacter);
 		}
 	}
@@ -89,8 +92,13 @@ void AEnemy::AgroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AA
 {
 	if (OtherActor)
 	{
-		if (Cast<AMainCharacter>(OtherActor))
+		if (const AMainCharacter* MainCharacter = Cast<AMainCharacter>(OtherActor))
 		{
+			if (CombatTarget == MainCharacter)
+			{
+				CombatTarget = nullptr;
+			}
+
 			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
 			if (AIController)
 			{
@@ -104,7 +112,7 @@ void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent
 {
 	if (OtherActor)
 	{
-		if (AMainCharacter *MainCharacter = Cast<AMainCharacter>(OtherActor))
+		if (AMainCharacter* MainCharacter = Cast<AMainCharacter>(OtherActor))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("MainCharacter detected in combat sphere - calling Attack()"));
 			bOverlappingCombatSphere = true;
@@ -122,20 +130,13 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
 		{
 			bOverlappingCombatSphere = false;
 
-			// Only act if the leaving pawn was our combat target
+			// Only clear combat target if the leaving pawn was our target and no longer in agro range.
 			if (CombatTarget == MainCharacter)
 			{
-				// If we're mid-attack (can't attack right now), schedule MoveToTarget after a short delay
-				if (!bCanAttack)
+				if (!AgroSphere || !AgroSphere->IsOverlappingActor(MainCharacter))
 				{
-					FTimerHandle IdleTimerHandle;
-					FTimerDelegate IdleTimerDelegate;
-					IdleTimerDelegate.BindUFunction(this, FName("SetEnemyMovementStatus"), EEnemyMovementStatus::EMS_Idle);
-					GetWorldTimerManager().SetTimer(IdleTimerHandle, IdleTimerDelegate, 0.5f, false);
+					CombatTarget = nullptr;
 				}
-
-				// Clear combat target reference when the pawn leaves the combat sphere
-				CombatTarget = nullptr;
 			}
 		}
 	}
@@ -175,7 +176,32 @@ void AEnemy::AttackEnd()
 		SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
 		FTimerHandle TimerHandle;
 		GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemy::Attack, FMath::RandRange(0.5f, 1.2f), false);
+		return;
 	}
+
+	if (AgroSphere && CombatTarget && AgroSphere->IsOverlappingActor(CombatTarget) && EnemyMovementStatus != EEnemyMovementStatus::EMS_Attacking)
+	{
+		SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
+		MoveToTarget(CombatTarget);
+	}
+	else
+	{
+		SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
+		if (AIController)
+		{
+			AIController->StopMovement();
+		}
+	}
+}
+
+void AEnemy::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (Montage != CombatMontage)
+	{
+		return;
+	}
+
+	AttackEnd();
 }
 
 void AEnemy::Attack()
@@ -201,6 +227,10 @@ void AEnemy::Attack()
 		{
 			AnimInstance->Montage_Play(CombatMontage, 1.35f);
 			AnimInstance->Montage_JumpToSection(FName("Attack"), CombatMontage);
+
+			FOnMontageEnded EndDelegate;
+			EndDelegate.BindUObject(this, &AEnemy::OnAttackMontageEnded);
+			AnimInstance->Montage_SetEndDelegate(EndDelegate, CombatMontage);
 			
 			if (SwingSound)
 			{

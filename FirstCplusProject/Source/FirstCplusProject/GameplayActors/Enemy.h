@@ -82,6 +82,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Attack();
 
+	UFUNCTION()
+	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement")
+	bool bIsInAgroSphere;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
+	AMainCharacter* AgroTarget;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -116,16 +125,11 @@ public:
 	bool bOverlappingCombatSphere;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="AI")
-	AMainCharacter *CombatTarget;
+	AMainCharacter* CombatTarget;
 	
 	UFUNCTION(BlueprintCallable)
 	void ActivateCollision() const;
 	
 	UFUNCTION(BlueprintCallable)
 	void DeactivateCollision() const;
-
-private:
-	// Track actors hit during current attack to prevent multiple hits
-	UPROPERTY()
-	TArray<AActor*> HitActorsDuringAttack;
 };
