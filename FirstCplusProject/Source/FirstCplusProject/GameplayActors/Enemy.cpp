@@ -48,15 +48,16 @@ void AEnemy::BeginPlay()
 	CombatSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::CombatSphereOnOverlapBegin);
 	CombatSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemy::CombatSphereOnOverlapEnd);
 	
-	// Ensure the box collision is active for overlaps
-	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// Bind combat collision overlap events
+	CombatCollision->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::CombatOnOverlapBegin);
+	CombatCollision->OnComponentEndOverlap.AddDynamic(this, &AEnemy::CombatOnOverlapEnd);
+	
+	// Configure the box collision for weapon overlaps
 	CombatCollision->SetCollisionObjectType(ECC_WorldDynamic);
-	// Start with ignoring everything then enable overlap with Pawns
 	CombatCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
 	CombatCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	// Allow overlap events
 	CombatCollision->SetGenerateOverlapEvents(true);
-	// Additional initialization if needed
+	// Start with collision disabled until attack is performed
 	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
@@ -105,6 +106,7 @@ void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent
 	{
 		if (AMainCharacter *MainCharacter = Cast<AMainCharacter>(OtherActor))
 		{
+			UE_LOG(LogTemp, Warning, TEXT("MainCharacter detected in combat sphere - calling Attack()"));
 			bOverlappingCombatSphere = true;
 			CombatTarget = MainCharacter;
 			Attack();
@@ -131,7 +133,6 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
 					IdleTimerDelegate.BindUFunction(this, FName("SetEnemyMovementStatus"), EEnemyMovementStatus::EMS_Idle);
 					GetWorldTimerManager().SetTimer(IdleTimerHandle, IdleTimerDelegate, 0.5f, false);
 				}
-				MoveToTarget(MainCharacter);
 
 				// Clear combat target reference when the pawn leaves the combat sphere
 				CombatTarget = nullptr;
@@ -185,7 +186,16 @@ void AEnemy::Attack()
 		SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Attacking);
 	}
 
-	if (bCanAttack){
+	// Turn to face the combat target
+	if (CombatTarget)
+	{
+		const FVector DirectionToTarget = (CombatTarget->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+		const FRotator RotationToTarget = DirectionToTarget.Rotation();
+		SetActorRotation(FRotator(0.0f, RotationToTarget.Yaw, 0.0f));
+	}
+
+	if (bCanAttack)
+	{
 		bCanAttack = false;
 		if (UAnimInstance *AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
 		{

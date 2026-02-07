@@ -123,4 +123,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void DeactivateCollision() const;
+
+private:
+	// Track actors hit during current attack to prevent multiple hits
+	UPROPERTY()
+	TArray<AActor*> HitActorsDuringAttack;
 };
