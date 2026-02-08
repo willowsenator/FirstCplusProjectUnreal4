@@ -38,7 +38,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement")
 	EEnemyMovementStatus EnemyMovementStatus;
 
-	FORCEINLINE void SetEnemyMovementStatus(const EEnemyMovementStatus NewStatus) { EnemyMovementStatus = NewStatus; }
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void SetEnemyMovementStatus(const EEnemyMovementStatus NewStatus);
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
 	USphereComponent *AgroSphere;
@@ -85,11 +87,6 @@ public:
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement")
-	bool bIsInAgroSphere;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
-	AMainCharacter* AgroTarget;
 
 protected:
 	// Called when the game starts or when spawned

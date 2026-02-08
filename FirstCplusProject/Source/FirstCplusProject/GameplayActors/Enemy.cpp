@@ -63,6 +63,11 @@ void AEnemy::BeginPlay()
 	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+void AEnemy::SetEnemyMovementStatus(const EEnemyMovementStatus NewStatus)
+{
+	EnemyMovementStatus = NewStatus;
+}
+
 // Called every frame
 void AEnemy::Tick(const float DeltaTime)
 {
@@ -99,7 +104,6 @@ void AEnemy::AgroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AA
 				CombatTarget = nullptr;
 			}
 
-			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
 			if (AIController)
 			{
 				AIController->StopMovement();
@@ -144,27 +148,28 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
 
 void AEnemy::MoveToTarget(const AMainCharacter* Target)
 {
-	SetEnemyMovementStatus(EEnemyMovementStatus::EMS_MoveToTarget);
-
-	if (AIController && Target)
+	if (!AIController || !Target)
 	{
-		
-		FAIMoveRequest MoveRequest;
-		MoveRequest.SetGoalActor(Target);
-		MoveRequest.SetAcceptanceRadius(5.f);
-
-		FNavPathSharedPtr NavPath;
-
-		AIController->MoveTo(MoveRequest, &NavPath);
-
-		/** For DEBUG Purposes
-		 * for (auto PathPoints = NavPath->GetPathPoints(); const auto PathPoint : PathPoints)
-		{
-			const FVector Location = PathPoint.Location;
-
-			UKismetSystemLibrary::DrawDebugSphere(this, Location, 25.f, 8, FLinearColor::Green, 10.f, 1.5f);
-		}*/
+		return;
 	}
+
+	SetEnemyMovementStatus(EEnemyMovementStatus::EMS_MoveToTarget);
+	
+	FAIMoveRequest MoveRequest;
+	MoveRequest.SetGoalActor(Target);
+	MoveRequest.SetAcceptanceRadius(5.f);
+
+	FNavPathSharedPtr NavPath;
+
+	AIController->MoveTo(MoveRequest, &NavPath);
+
+	/** For DEBUG Purposes
+	 * for (auto PathPoints = NavPath->GetPathPoints(); const auto PathPoint : PathPoints)
+	{
+		const FVector Location = PathPoint.Location;
+
+		UKismetSystemLibrary::DrawDebugSphere(this, Location, 25.f, 8, FLinearColor::Green, 10.f, 1.5f);
+	}*/
 }
 
 void AEnemy::AttackEnd()

@@ -18,6 +18,8 @@ class FIRSTCPLUSPROJECT_API UEnemyAnimInstance : public UAnimInstance
 public:
 	virtual void NativeInitializeAnimation() override;
 
+	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
 	UFUNCTION(BlueprintCallable, Category=AnimationProperties)
 	void UpdateAnimationProperties();
 	
@@ -29,5 +31,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement)
 	AEnemy* Enemy;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+	EEnemyMovementStatus EnemyMovementStatus;
 };
 

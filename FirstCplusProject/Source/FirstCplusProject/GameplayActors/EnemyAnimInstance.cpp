@@ -12,6 +12,12 @@ void UEnemyAnimInstance::NativeInitializeAnimation()
 	}
 }
 
+void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+{
+	Super::NativeUpdateAnimation(DeltaSeconds);
+	UpdateAnimationProperties();
+}
+
 void UEnemyAnimInstance::UpdateAnimationProperties()
 {
 	if (Pawn == nullptr)
@@ -25,7 +31,15 @@ void UEnemyAnimInstance::UpdateAnimationProperties()
 		const FVector LateralVelocity = FVector(Velocity.X, Velocity.Y, 0.f);
 		MovementSpeed = LateralVelocity.Size();
 
-		Enemy = Cast<AEnemy>(Pawn);
+		if (Enemy == nullptr)
+		{
+			Enemy = Cast<AEnemy>(Pawn);
+		}
+
+		if (Enemy)
+		{
+			EnemyMovementStatus = Enemy->EnemyMovementStatus;
+		}
 	}
 }
 
