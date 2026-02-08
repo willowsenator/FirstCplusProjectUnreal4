@@ -20,6 +20,7 @@ void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UEnemyAnimInstance::UpdateAnimationProperties()
 {
+	// Always try to get pawn owner if we don't have it
 	if (Pawn == nullptr)
 	{
 		Pawn = TryGetPawnOwner();
@@ -27,19 +28,28 @@ void UEnemyAnimInstance::UpdateAnimationProperties()
 
 	if (Pawn)
 	{
+		// Calculate velocity and movement speed
 		const FVector Velocity = Pawn->GetVelocity();
 		const FVector LateralVelocity = FVector(Velocity.X, Velocity.Y, 0.f);
 		MovementSpeed = LateralVelocity.Size();
 
+		// Get or cast to Enemy reference
 		if (Enemy == nullptr)
 		{
 			Enemy = Cast<AEnemy>(Pawn);
 		}
 
+		// Always sync the movement status from the enemy
 		if (Enemy)
 		{
 			EnemyMovementStatus = Enemy->EnemyMovementStatus;
 		}
+	}
+	else
+	{
+		// If pawn is invalid, reset values
+		MovementSpeed = 0.0f;
+		EnemyMovementStatus = EEnemyMovementStatus::EMS_Idle;
 	}
 }
 

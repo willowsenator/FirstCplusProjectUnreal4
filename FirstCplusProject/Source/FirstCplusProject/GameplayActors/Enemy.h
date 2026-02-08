@@ -129,4 +129,8 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void DeactivateCollision() const;
+
+private:
+	// Prevent double-processing AttackEnd when both notify and montage end fire.
+	bool bAttackEndHandled = false;
 };

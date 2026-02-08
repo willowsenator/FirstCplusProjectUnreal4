@@ -72,6 +72,24 @@ void AEnemy::SetEnemyMovementStatus(const EEnemyMovementStatus NewStatus)
 void AEnemy::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (!CombatTarget || bOverlappingCombatSphere || EnemyMovementStatus == EEnemyMovementStatus::EMS_Attacking)
+	{
+		return;
+	}
+
+	if (AgroSphere && AgroSphere->IsOverlappingActor(CombatTarget))
+	{
+		const UAnimInstance* AnimInstance = GetMesh() ? GetMesh()->GetAnimInstance() : nullptr;
+		if (const bool bAttackMontagePlaying = AnimInstance && CombatMontage && AnimInstance->Montage_IsPlaying(CombatMontage); !bAttackMontagePlaying && AIController)
+		{
+			const UPathFollowingComponent* PathFollow = AIController->GetPathFollowingComponent();
+			if (const bool bIsMoving = PathFollow && PathFollow->GetStatus() == EPathFollowingStatus::Moving; !bIsMoving)
+			{
+				MoveToTarget(CombatTarget);
+			}
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -108,6 +126,9 @@ void AEnemy::AgroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AA
 			{
 				AIController->StopMovement();
 			}
+
+			// Important: Set status to Idle so animation blends back properly
+			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
 		}
 	}
 }
@@ -140,6 +161,12 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
 				if (!AgroSphere || !AgroSphere->IsOverlappingActor(MainCharacter))
 				{
 					CombatTarget = nullptr;
+					SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
+				}
+				else
+				{
+					// Still in agro range, return to moving
+					MoveToTarget(MainCharacter);
 				}
 			}
 		}
@@ -149,6 +176,11 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
 void AEnemy::MoveToTarget(const AMainCharacter* Target)
 {
 	if (!AIController || !Target)
+	{
+		return;
+	}
+
+	if (const UAnimInstance* AnimInstance = GetMesh() ? GetMesh()->GetAnimInstance() : nullptr; EnemyMovementStatus == EEnemyMovementStatus::EMS_Attacking || (AnimInstance && CombatMontage && AnimInstance->Montage_IsPlaying(CombatMontage)))
 	{
 		return;
 	}
@@ -172,43 +204,6 @@ void AEnemy::MoveToTarget(const AMainCharacter* Target)
 	}*/
 }
 
-void AEnemy::AttackEnd()
-{
-	bCanAttack = true;
-
-	if (bOverlappingCombatSphere && CombatTarget)
-	{
-		SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
-		FTimerHandle TimerHandle;
-		GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemy::Attack, FMath::RandRange(0.5f, 1.2f), false);
-		return;
-	}
-
-	if (AgroSphere && CombatTarget && AgroSphere->IsOverlappingActor(CombatTarget) && EnemyMovementStatus != EEnemyMovementStatus::EMS_Attacking)
-	{
-		SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
-		MoveToTarget(CombatTarget);
-	}
-	else
-	{
-		SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
-		if (AIController)
-		{
-			AIController->StopMovement();
-		}
-	}
-}
-
-void AEnemy::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
-{
-	if (Montage != CombatMontage)
-	{
-		return;
-	}
-
-	AttackEnd();
-}
-
 void AEnemy::Attack()
 {
 	if (AIController)
@@ -228,11 +223,13 @@ void AEnemy::Attack()
 	if (bCanAttack)
 	{
 		bCanAttack = false;
+		bAttackEndHandled = false;
 		if (UAnimInstance *AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
 		{
 			AnimInstance->Montage_Play(CombatMontage, 1.35f);
 			AnimInstance->Montage_JumpToSection(FName("Attack"), CombatMontage);
 
+			// Bind the montage end callback so AttackEnd() gets called when montage finishes
 			FOnMontageEnded EndDelegate;
 			EndDelegate.BindUObject(this, &AEnemy::OnAttackMontageEnded);
 			AnimInstance->Montage_SetEndDelegate(EndDelegate, CombatMontage);
@@ -244,6 +241,53 @@ void AEnemy::Attack()
 		}
 	}
 	
+}
+
+void AEnemy::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (Montage != CombatMontage)
+	{
+		return;
+	}
+
+	AttackEnd();
+}
+
+void AEnemy::AttackEnd()
+{
+	if (bAttackEndHandled)
+	{
+		// Already processed by montage end or notify.
+		return;
+	}
+
+	bAttackEndHandled = true;
+	bCanAttack = true;
+
+	// If still in combat sphere, schedule next attack
+	if (bOverlappingCombatSphere && CombatTarget)
+	{
+		SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
+		FTimerHandle TimerHandle;
+		GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemy::Attack, FMath::RandRange(0.5f, 1.2f), false);
+		return;
+	}
+
+	// If still in agro sphere, return to moving toward target
+	if (AgroSphere && CombatTarget && AgroSphere->IsOverlappingActor(CombatTarget))
+	{
+		// Directly move to target (which sets status to EMS_MoveToTarget)
+		MoveToTarget(CombatTarget);
+	}
+	else
+	{
+		// Out of agro range, stop and go idle
+		SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
+		if (AIController)
+		{
+			AIController->StopMovement();
+		}
+	}
 }
 
 void AEnemy::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
