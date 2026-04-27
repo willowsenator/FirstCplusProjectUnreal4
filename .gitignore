@@ -1,1 +1,4 @@
 /FirstCplusProject/Content/Fantasy_Pack/*
+
+# Per-developer agent config (not for the repo)
+.claude/
