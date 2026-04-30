@@ -11,7 +11,6 @@
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 
@@ -105,8 +104,7 @@ void AMainCharacter::Die()
 	bIsDead = true;
 	
 	// Disable player input
-	APlayerController* PC = Cast<APlayerController>(GetController());
-	if (PC)
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
 	{
 		DisableInput(PC);
 	}
@@ -456,8 +454,6 @@ void AMainCharacter::AttackEnd()
 
 void AMainCharacter::PlaySwingSound() const
 {
-	if (EquippedWeapon->SwingSound)
-	{
-		UGameplayStatics::PlaySound2D(this, EquippedWeapon->SwingSound);
-	}
+	if (!EquippedWeapon || !EquippedWeapon->SwingSound) return;
+	UGameplayStatics::PlaySound2D(this, EquippedWeapon->SwingSound);
 }
