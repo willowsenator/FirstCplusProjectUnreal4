@@ -133,4 +133,7 @@ public:
 private:
 	// Prevent double-processing AttackEnd when both notify and montage end fire.
 	bool bAttackEndHandled = false;
+	
+	// Member-scoped so disengage paths can clear a pending re-attack
+	FTimerHandle AttackTimerHandle;
 };

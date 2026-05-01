@@ -127,6 +127,8 @@ void AEnemy::AgroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AA
 				AIController->StopMovement();
 			}
 
+			// Clear AttackTimer
+			GetWorldTimerManager().ClearTimer(AttackTimerHandle);
 			// Important: Set status to Idle so animation blends back properly
 			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
 		}
@@ -154,6 +156,7 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
 		if (const AMainCharacter* MainCharacter = Cast<AMainCharacter>(OtherActor))
 		{
 			bOverlappingCombatSphere = false;
+			GetWorldTimerManager().ClearTimer(AttackTimerHandle);
 
 			// Only clear combat target if the leaving pawn was our target and no longer in agro range.
 			if (CombatTarget == MainCharacter)
@@ -165,7 +168,8 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
 				}
 				else
 				{
-					// Still in agro range, return to moving
+					// Still in agro range, return to moving - clear EMS_Attacking first
+					SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
 					MoveToTarget(MainCharacter);
 				}
 			}
@@ -206,6 +210,8 @@ void AEnemy::MoveToTarget(const AMainCharacter* Target)
 
 void AEnemy::Attack()
 {
+	if (!bOverlappingCombatSphere || !CombatTarget) return;
+	
 	if (AIController)
 	{
 		AIController->StopMovement();
@@ -268,15 +274,15 @@ void AEnemy::AttackEnd()
 	if (bOverlappingCombatSphere && CombatTarget)
 	{
 		SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
-		FTimerHandle TimerHandle;
-		GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemy::Attack, FMath::RandRange(0.5f, 1.2f), false);
+		GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &AEnemy::Attack, FMath::RandRange(0.5f, 1.2f), false);
 		return;
 	}
 
 	// If still in agro sphere, return to moving toward target
 	if (AgroSphere && CombatTarget && AgroSphere->IsOverlappingActor(CombatTarget))
 	{
-		// Directly move to target (which sets status to EMS_MoveToTarget)
+		// Clear EMS_Attacking so MoveToTarget's status gate won't early-return
+		SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
 		MoveToTarget(CombatTarget);
 	}
 	else
