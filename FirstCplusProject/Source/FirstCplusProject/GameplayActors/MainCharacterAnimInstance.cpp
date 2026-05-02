@@ -44,6 +44,8 @@ void UMainCharacterAnimInstance::UpdateAnimationProperties()
 		}
 
 		bIsInAir = Pawn->GetMovementComponent()->IsFalling();
+		
+		bIsSprinting = MainCharacter && MainCharacter->MovementStatus == EMovementStatus::EMS_Sprinting && MovementSpeed > 10.f;
 
 		if (MainCharacter == nullptr )
 		{
