@@ -72,14 +72,14 @@ void ACritter::Move(const FInputActionValue& Value)
 		if (MoveValue.Y != 0.f)
 		{
 			const FVector Direction = MoveRotation.RotateVector(FVector::ForwardVector);
-			CurrentVelocity.Y = FMath::Clamp(MoveValue.Y, -1.0f, 1.0f) * MaxSpeed;
+			CurrentVelocity += Direction * FMath::Clamp(MoveValue.Y, -1.0f, 1.0f) * MaxSpeed;
 		} 
 
 		// Right/Left direction
 		if(MoveValue.X != 0.f)
 		{
 			const FVector Direction = MoveRotation.RotateVector(FVector::RightVector);
-			CurrentVelocity.X = FMath::Clamp(MoveValue.X, -1.0f, 1.0f) * MaxSpeed;
+			CurrentVelocity += Direction * FMath::Clamp(MoveValue.X, -1.0f, 1.0f) * MaxSpeed;
 		}
 	}
 }
