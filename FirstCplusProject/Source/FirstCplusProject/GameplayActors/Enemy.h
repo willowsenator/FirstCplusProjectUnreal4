@@ -116,13 +116,13 @@ public:
 	virtual void CombatOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UFUNCTION(BlueprintCallable )
-	void MoveToTarget(const AMainCharacter * Target);
+	void MoveToTarget(const APawn* Target);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="AI")
 	bool bOverlappingCombatSphere;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="AI")
-	AMainCharacter* CombatTarget;
+	APawn* CombatTarget;
 	
 	UFUNCTION(BlueprintCallable)
 	void ActivateCollision() const;

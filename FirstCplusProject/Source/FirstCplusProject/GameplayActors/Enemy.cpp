@@ -161,7 +161,7 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
 	}
 }
 
-void AEnemy::MoveToTarget(const AMainCharacter* Target)
+void AEnemy::MoveToTarget(const APawn* Target)
 {
 	if (!AIController || !Target)
 	{
