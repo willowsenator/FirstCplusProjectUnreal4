@@ -43,8 +43,6 @@ void AWeapon::BeginPlay()
 	CombatCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	// Allow overlap events
 	CombatCollision->SetGenerateOverlapEvents(true);
-	// Additional initialization if needed
-	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 
