@@ -5,6 +5,7 @@
 
 #include "Components/BoxComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "Sound/SoundCue.h"
@@ -35,6 +36,11 @@ AEnemy::AEnemy()
 	Damage = 10.f;
 	
 	bCanAttack = true;
+	
+	// Steer around other AIs instead of pushing through their capsules
+	GetCharacterMovement()->bUseRVOAvoidance = true;
+	GetCharacterMovement()->AvoidanceWeight = 0.5f;
+	GetCharacterMovement()->AvoidanceConsiderationRadius = 500.f;
 }
 
 // Called when the game starts or when spawned
@@ -193,7 +199,7 @@ void AEnemy::MoveToTarget(const AMainCharacter* Target)
 	
 	FAIMoveRequest MoveRequest;
 	MoveRequest.SetGoalActor(Target);
-	MoveRequest.SetAcceptanceRadius(5.f);
+	MoveRequest.SetAcceptanceRadius(60.f); // stop just inside the 75-radius combat sphere
 
 	FNavPathSharedPtr NavPath;
 
