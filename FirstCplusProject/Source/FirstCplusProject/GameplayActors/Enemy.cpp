@@ -253,11 +253,7 @@ void AEnemy::Attack()
 
 void AEnemy::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
-	if (Montage != CombatMontage)
-	{
-		return;
-	}
-
+	if (Montage != CombatMontage || bInterrupted || !IsValid(this) || IsActorBeingDestroyed()) return;
 	AttackEnd();
 }
 
