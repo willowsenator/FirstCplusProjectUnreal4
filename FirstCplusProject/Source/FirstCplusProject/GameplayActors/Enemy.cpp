@@ -147,7 +147,6 @@ void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent
 	{
 		if (AMainCharacter* MainCharacter = Cast<AMainCharacter>(OtherActor))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("MainCharacter detected in combat sphere - calling Attack()"));
 			bOverlappingCombatSphere = true;
 			CombatTarget = MainCharacter;
 			Attack();
@@ -330,7 +329,7 @@ void AEnemy::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAct
 void AEnemy::CombatOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 								 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	UE_LOG(LogTemp, Warning, TEXT("AWeapon::CombatOnOverlapEnd()") );
+	
 }
 
 void AEnemy::ActivateCollision() const
