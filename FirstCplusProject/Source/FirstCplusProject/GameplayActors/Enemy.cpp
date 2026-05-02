@@ -25,7 +25,7 @@ AEnemy::AEnemy()
 	CombatSphere->InitSphereRadius(75.f);
 	
 	CombatCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("CombatCollision"));
-	CombatCollision->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("weapon_socket"));
+	CombatCollision->SetupAttachment(GetMesh(), TEXT("weapon_socket"));
 
 	bOverlappingCombatSphere = false;
 	CombatTarget = nullptr;
