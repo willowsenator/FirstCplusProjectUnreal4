@@ -4,6 +4,7 @@
 #include "MainCharacterAnimInstance.h"
 
 #include "GameFramework/PawnMovementComponent.h"
+#include "KismetAnimationLibrary.h"
 
 void UMainCharacterAnimInstance::NativeInitializeAnimation()
 {
@@ -30,18 +31,7 @@ void UMainCharacterAnimInstance::UpdateAnimationProperties()
 		const FVector LateralVelocity = FVector(Velocity.X, Velocity.Y, 0.0f);
 		MovementSpeed = LateralVelocity.Size();
 
-		// Calculate Direction (degrees) relative to actor forward without using UKismet helpers
-		if (LateralVelocity.SizeSquared() > 0.f)
-		{
-			// Transform world velocity into the actor's local space
-			const FRotator ActorRotation = Pawn->GetActorRotation();
-			const FVector LocalVelocity = ActorRotation.UnrotateVector(LateralVelocity);
-			Direction = FMath::RadiansToDegrees(FMath::Atan2(LocalVelocity.Y, LocalVelocity.X));
-		}
-		else
-		{
-			Direction = 0.f;
-		}
+		Direction = UKismetAnimationLibrary::CalculateDirection(LateralVelocity, Pawn->GetActorRotation());
 
 		bIsInAir = Pawn->GetMovementComponent()->IsFalling();
 		
