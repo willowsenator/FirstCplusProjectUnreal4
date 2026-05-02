@@ -3,6 +3,7 @@
 
 #include "MainCharacter.h"
 
+#include "Animation/AnimMontage.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -134,6 +135,19 @@ void AMainCharacter::IncrementCoins(const int32 Amount)
 void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (CombatMontage)
+	{
+		bool bHasActivate = false;
+		bool bHasDeactivate = false;
+		for (const FAnimNotifyEvent& Event : CombatMontage->Notifies)
+		{
+			if (Event.NotifyName == TEXT("ActivateCollision")) bHasActivate = true;
+			else if (Event.NotifyName == TEXT("DeactivateCollision")) bHasDeactivate = true;
+		}
+		ensureMsgf(bHasActivate && bHasDeactivate,
+			TEXT("AMainCharacter::CombatMontage is missing ActivateCollision and/or DeactivateCollision notifies — hit volume will never toggle"));
+	}
 }
 
 // Called every frame

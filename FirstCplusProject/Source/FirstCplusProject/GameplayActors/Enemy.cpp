@@ -3,6 +3,7 @@
 
 #include "Enemy.h"
 
+#include "Animation/AnimMontage.h"
 #include "Components/BoxComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -64,6 +65,19 @@ void AEnemy::BeginPlay()
 	// Bind combat collision overlap events
 	CombatCollision->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::CombatOnOverlapBegin);
 	CombatCollision->OnComponentEndOverlap.AddDynamic(this, &AEnemy::CombatOnOverlapEnd);
+
+	if (CombatMontage)
+	{
+		bool bHasActivate = false;
+		bool bHasDeactivate = false;
+		for (const FAnimNotifyEvent& Event : CombatMontage->Notifies)
+		{
+			if (Event.NotifyName == TEXT("ActivateCollision")) bHasActivate = true;
+			else if (Event.NotifyName == TEXT("DeactivateCollision")) bHasDeactivate = true;
+		}
+		ensureMsgf(bHasActivate && bHasDeactivate,
+			TEXT("AEnemy::CombatMontage is missing ActivateCollision and/or DeactivateCollision notifies — hit volume will never toggle"));
+	}
 }
 
 void AEnemy::SetEnemyMovementStatus(const EEnemyMovementStatus NewStatus)
