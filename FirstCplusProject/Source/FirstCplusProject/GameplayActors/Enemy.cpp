@@ -26,6 +26,11 @@ AEnemy::AEnemy()
 	
 	CombatCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("CombatCollision"));
 	CombatCollision->SetupAttachment(GetMesh(), TEXT("weapon_socket"));
+	CombatCollision->SetCollisionObjectType(ECC_WorldDynamic);
+	CombatCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	CombatCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	CombatCollision->SetGenerateOverlapEvents(true);
+	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	bOverlappingCombatSphere = false;
 	CombatTarget = nullptr;
@@ -59,14 +64,6 @@ void AEnemy::BeginPlay()
 	// Bind combat collision overlap events
 	CombatCollision->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::CombatOnOverlapBegin);
 	CombatCollision->OnComponentEndOverlap.AddDynamic(this, &AEnemy::CombatOnOverlapEnd);
-	
-	// Configure the box collision for weapon overlaps
-	CombatCollision->SetCollisionObjectType(ECC_WorldDynamic);
-	CombatCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
-	CombatCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	CombatCollision->SetGenerateOverlapEvents(true);
-	// Start with collision disabled until attack is performed
-	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AEnemy::SetEnemyMovementStatus(const EEnemyMovementStatus NewStatus)
