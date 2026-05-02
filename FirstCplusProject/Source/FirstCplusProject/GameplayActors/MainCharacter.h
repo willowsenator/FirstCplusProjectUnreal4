@@ -191,7 +191,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
 	UParticleSystem *HitParticles;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
 	USoundCue* HitSound;
 
 	

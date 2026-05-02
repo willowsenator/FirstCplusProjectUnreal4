@@ -120,7 +120,7 @@ void AWeapon::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 		if (Enemy->HitParticles)
 		{
 			// Prefer socket location on the static mesh if it exists
-			if (StaticMesh && StaticMesh->GetSocketByName("WeaponSocket"))
+			if (StaticMesh)
 			{
 				const FVector SocketLocation = StaticMesh->GetSocketLocation(TEXT("WeaponSocket"));
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Enemy->HitParticles, SocketLocation, FRotator::ZeroRotator, FVector(1.f), false);
