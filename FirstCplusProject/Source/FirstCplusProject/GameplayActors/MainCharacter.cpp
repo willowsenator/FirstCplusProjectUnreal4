@@ -160,10 +160,12 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 	// Get player Controller
 	const auto* PlayerController = Cast<APlayerController>(GetController());
+	if (!PlayerController) return;
 
 	// Get the local player subsystem
 	auto* Subsystem = ULocalPlayer::GetSubsystem<
 		UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	if (!Subsystem) return;
 
 	// Clear out existing mappings
 	Subsystem->ClearAllMappings();
@@ -171,6 +173,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	Subsystem->AddMappingContext(InputMapping, 0);
 
 	auto* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	if (!EnhancedInputComponent) return;
 	EnhancedInputComponent->BindAction(InputMove, ETriggerEvent::Triggered, this, &AMainCharacter::Move);
 
 	EnhancedInputComponent->BindAction(InputLook, ETriggerEvent::Triggered, this, &AMainCharacter::Look);
