@@ -13,8 +13,8 @@
 // Sets default values
 AEnemy::AEnemy()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+ 	// Movement resumption is event-driven (AttackEnd / *OnOverlapEnd); no per-frame work needed.
+	PrimaryActorTick.bCanEverTick = false;
 
 	AgroSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AgroSphere"));
 	AgroSphere->SetupAttachment(GetRootComponent());
@@ -71,28 +71,10 @@ void AEnemy::SetEnemyMovementStatus(const EEnemyMovementStatus NewStatus)
 	EnemyMovementStatus = NewStatus;
 }
 
-// Called every frame
+// Tick is disabled (see PrimaryActorTick.bCanEverTick = false in the constructor).
 void AEnemy::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (!CombatTarget || bOverlappingCombatSphere || EnemyMovementStatus == EEnemyMovementStatus::EMS_Attacking)
-	{
-		return;
-	}
-
-	if (AgroSphere && AgroSphere->IsOverlappingActor(CombatTarget))
-	{
-		const UAnimInstance* AnimInstance = GetMesh() ? GetMesh()->GetAnimInstance() : nullptr;
-		if (const bool bAttackMontagePlaying = AnimInstance && CombatMontage && AnimInstance->Montage_IsPlaying(CombatMontage); !bAttackMontagePlaying && AIController)
-		{
-			const UPathFollowingComponent* PathFollow = AIController->GetPathFollowingComponent();
-			if (const bool bIsMoving = PathFollow && PathFollow->GetStatus() == EPathFollowingStatus::Moving; !bIsMoving)
-			{
-				MoveToTarget(CombatTarget);
-			}
-		}
-	}
 }
 
 // Called to bind functionality to input
