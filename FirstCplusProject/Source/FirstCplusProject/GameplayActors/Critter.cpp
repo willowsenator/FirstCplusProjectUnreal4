@@ -38,6 +38,7 @@ void ACritter::Tick(const float DeltaTime)
 		const FVector NewLocation = GetActorLocation() + (CurrentVelocity * DeltaTime);
 		SetActorLocation(NewLocation);
 	}
+	CurrentVelocity = FVector(0.0f);
 }
 
 // Called to bind functionality to input
@@ -62,9 +63,6 @@ void ACritter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void ACritter::Move(const FInputActionValue& Value)
 {
-	// Reset velocity at start of input
-	CurrentVelocity = FVector(0.0f);
-	
 	if (Controller != nullptr)
 	{
 		const FVector2d MoveValue = Value.Get<FVector2d>();
