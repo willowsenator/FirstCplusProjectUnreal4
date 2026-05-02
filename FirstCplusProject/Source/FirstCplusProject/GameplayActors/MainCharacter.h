@@ -9,6 +9,12 @@
 #include "Weapon.h"
 #include "MainCharacter.generated.h"
 
+
+class UParticleSystem;
+class USoundCue;
+class UBoxComponent;
+
+
 UENUM(BlueprintType)
 enum class EMovementStatus : uint8
 {
@@ -151,8 +157,12 @@ public:
 
 	void DecreaseHealth(float Amount);
 
-	static void Die();
+	void Die();
+	
 	void IncrementCoins(int32 Amount);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player Stats")
+	bool bIsDead;
 
 protected:
 	// Called when the game starts or when spawned
@@ -177,6 +187,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Anims")
 	bool bAttacking;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	UParticleSystem *HitParticles;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	USoundCue* HitSound;
 
 	
 	void Attack();
@@ -187,8 +203,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anims")
 	UAnimMontage *CombatMontage;
 	
+	UFUNCTION(BlueprintCallable)
+	void PlaySwingSound() const;
+	
 private:
 	void Move(const FInputActionValue& Value);
+    // Timer to ensure AttackEnd is called if animation notify is missing
+    FTimerHandle AttackTimer;
 
 	/** Called via input to and turn the character at rates
 	* @param Rate This is a normalized rate, i.e. 1.0 means 100% of desired look up/down rate

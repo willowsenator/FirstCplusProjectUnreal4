@@ -3,6 +3,7 @@
 
 #include "MainCharacter.h"
 
+#include "Animation/AnimMontage.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -11,6 +12,8 @@
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -66,6 +69,12 @@ AMainCharacter::AMainCharacter()
 
 	StaminaDrainRate = 25.f;
 	MinSprintStamina = 50.0f;
+
+	// Initialize boolean flags
+	bIsDead = false;
+	bAttacking = false;
+	bSprinting = false;
+	bLMB = false;
 }
 
 void AMainCharacter::ShowPickupLocations()
@@ -91,7 +100,27 @@ void AMainCharacter::DecreaseHealth(const float Amount)
 
 void AMainCharacter::Die()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Player died"));
+	if (bIsDead) return;  // Prevent multiple deaths
+	
+	bIsDead = true;
+	
+	// Disable player input
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		DisableInput(PC);
+	}
+	
+	// Stop movement
+	GetCharacterMovement()->DisableMovement();
+	
+	// Disable collision
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	// TODO: Play death animation
+	// TODO: Trigger respawn timer
+	// TODO: Notify GameMode
+	
+	UE_LOG(LogTemp, Warning, TEXT("Player died at location: %s"), *GetActorLocation().ToString());
 }
 
 void AMainCharacter::IncrementCoins(const int32 Amount)
@@ -106,6 +135,19 @@ void AMainCharacter::IncrementCoins(const int32 Amount)
 void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (CombatMontage)
+	{
+		bool bHasActivate = false;
+		bool bHasDeactivate = false;
+		for (const FAnimNotifyEvent& Event : CombatMontage->Notifies)
+		{
+			if (Event.NotifyName == TEXT("ActivateCollision")) bHasActivate = true;
+			else if (Event.NotifyName == TEXT("DeactivateCollision")) bHasDeactivate = true;
+		}
+		ensureMsgf(bHasActivate && bHasDeactivate,
+			TEXT("AMainCharacter::CombatMontage is missing ActivateCollision and/or DeactivateCollision notifies — hit volume will never toggle"));
+	}
 }
 
 // Called every frame
@@ -132,10 +174,12 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 	// Get player Controller
 	const auto* PlayerController = Cast<APlayerController>(GetController());
+	if (!PlayerController) return;
 
 	// Get the local player subsystem
 	auto* Subsystem = ULocalPlayer::GetSubsystem<
 		UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	if (!Subsystem) return;
 
 	// Clear out existing mappings
 	Subsystem->ClearAllMappings();
@@ -143,6 +187,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	Subsystem->AddMappingContext(InputMapping, 0);
 
 	auto* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	if (!EnhancedInputComponent) return;
 	EnhancedInputComponent->BindAction(InputMove, ETriggerEvent::Triggered, this, &AMainCharacter::Move);
 
 	EnhancedInputComponent->BindAction(InputLook, ETriggerEvent::Triggered, this, &AMainCharacter::Look);
@@ -225,15 +270,32 @@ void AMainCharacter::StopJumping(const FInputActionValue& Value)
 
 void AMainCharacter::StartSprinting(const FInputActionValue& Value)
 {
-	if (Value.Get<bool>() && GetVelocity().Size() > 0.0f && Stamina > 0.0f)
+	if (Value.Get<bool>())
 	{
-		bSprinting = true;
+		// Can't sprint if exhausted
+		if (StaminaStatus == EStaminaStatus::ESS_Exhausted || 
+			StaminaStatus == EStaminaStatus::ESS_ExhaustedRecovering)
+		{
+			return;
+		}
+		
+		// Can't sprint if dead
+		if (bIsDead)
+		{
+			return;
+		}
+		
+		// Can sprint even when standing still (will activate when moving)
+		if (Stamina > 0.0f)
+		{
+			bSprinting = true;
+		}
 	}
 }
 
 void AMainCharacter::StopSprinting(const FInputActionValue& Value)
 {
-	if (!Value.Get<bool>())
+	if (!Value.Get<bool>() || bIsDead)
 	{
 		bSprinting = false;
 	}
@@ -246,7 +308,8 @@ void AMainCharacter::LMBDown(const FInputActionValue& Value)
 		bLMB = true;
 		if (ActiveOverlappingItem)
 		{
-			if (AWeapon* Weapon = Cast<AWeapon>(ActiveOverlappingItem))
+			AWeapon* Weapon = Cast<AWeapon>(ActiveOverlappingItem);
+			if (Weapon)
 			{
 				Weapon->Equip(this);
 				ActiveOverlappingItem = nullptr; // Clear the active overlapping item after equipping
@@ -365,34 +428,64 @@ void AMainCharacter::HandleNotSprinting(const float DeltaStamina)
 
 void AMainCharacter::Attack()
 {
+	if (!EquippedWeapon)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Cannot attack - no weapon equipped"));
+		return;
+	}
+	
 	if (bAttacking) return;
 
 	bAttacking = true;
 
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
 	{
+		float PlayRate = 1.0f;
+		FName SectionName;
 		switch (FMath::RandRange(0, 1))
 		{
 		case 0:
-			AnimInstance->Montage_Play(CombatMontage, 2.2f);
-			AnimInstance->Montage_JumpToSection(FName("Attack_1"), CombatMontage);
+			PlayRate = 2.2f;
+			SectionName = FName("Attack_1");
+			
+			
 			break;
 		case 1:
-			AnimInstance->Montage_Play(CombatMontage, 1.8f);
-			AnimInstance->Montage_JumpToSection(FName("Attack_2"), CombatMontage);
+			PlayRate = 1.8f;
+			SectionName = FName("Attack_2");
 			break;
 		default:
 			break;
+		}
+		
+		AnimInstance->Montage_Play(CombatMontage, PlayRate);
+		AnimInstance->Montage_JumpToSection(SectionName, CombatMontage);
+		
+		
+		// Safety net: arm a timer in case the End notify fails to fire.
+		const int32 SectionIdx = CombatMontage->GetSectionIndex(SectionName);
+		if (SectionIdx != INDEX_NONE)
+		{
+			const float MontageLen = CombatMontage->GetSectionLength(SectionIdx) / PlayRate;
+			GetWorldTimerManager().SetTimer(AttackTimer, this, &AMainCharacter::AttackEnd, 
+				MontageLen + 0.05f, false);			
 		}
 	}
 }
 
 void AMainCharacter::AttackEnd()
 {
+	GetWorldTimerManager().ClearTimer(AttackTimer);
 	bAttacking = false;
 
 	if (bLMB)
 	{
 		Attack();
 	}
+}
+
+void AMainCharacter::PlaySwingSound() const
+{
+	if (!EquippedWeapon || !EquippedWeapon->SwingSound) return;
+	UGameplayStatics::PlaySound2D(this, EquippedWeapon->SwingSound);
 }

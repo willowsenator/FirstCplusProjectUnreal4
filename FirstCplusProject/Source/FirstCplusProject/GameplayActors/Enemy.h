@@ -11,7 +11,13 @@
 
 #include "Enemy.generated.h"
 
-UENUM(Blueprintable)
+
+class UParticleSystem;
+class USoundCue;
+class UBoxComponent;
+class UAnimMontage;
+
+UENUM(BlueprintType)
 enum class EEnemyMovementStatus : uint8
 {
 	EMS_Idle UMETA(DisplayName = "Idle"),
@@ -32,7 +38,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement")
 	EEnemyMovementStatus EnemyMovementStatus;
 
-	FORCEINLINE void SetEnemyMovementStatus(const EEnemyMovementStatus NewStatus) { EnemyMovementStatus = NewStatus; }
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void SetEnemyMovementStatus(const EEnemyMovementStatus NewStatus);
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
 	USphereComponent *AgroSphere;
@@ -42,6 +50,43 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
 	AAIController *AIController;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	float Health;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	float MaxHealth;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	float Damage;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	UParticleSystem *HitParticles;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	USoundCue* HitSound;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	USoundCue* SwingSound;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Combat")
+	UBoxComponent* CombatCollision;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	UAnimMontage* CombatMontage;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat")
+	bool bCanAttack;
+	
+	UFUNCTION(BlueprintCallable)
+	void AttackEnd();
+	
+	UFUNCTION(BlueprintCallable)
+	void Attack();
+
+	UFUNCTION()
+	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -63,13 +108,32 @@ public:
 	virtual void CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	virtual void CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	
+	UFUNCTION()
+	virtual void CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	UFUNCTION()
+	virtual void CombatOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UFUNCTION(BlueprintCallable )
-	void MoveToTarget(const AMainCharacter * Target);
+	void MoveToTarget(const APawn* Target);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="AI")
 	bool bOverlappingCombatSphere;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="AI")
-	AMainCharacter *CombatTarget;
+	APawn* CombatTarget;
+	
+	UFUNCTION(BlueprintCallable)
+	void ActivateCollision() const;
+	
+	UFUNCTION(BlueprintCallable)
+	void DeactivateCollision() const;
+
+private:
+	// Prevent double-processing AttackEnd when both notify and montage end fire.
+	bool bAttackEndHandled = false;
+	
+	// Member-scoped so disengage paths can clear a pending re-attack
+	FTimerHandle AttackTimerHandle;
 };

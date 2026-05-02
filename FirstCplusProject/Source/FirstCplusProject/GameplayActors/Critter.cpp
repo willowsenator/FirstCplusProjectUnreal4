@@ -32,9 +32,12 @@ void ACritter::BeginPlay()
 void ACritter::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	const FVector NewLocation = GetActorLocation() + (CurrentVelocity * DeltaTime);
-	SetActorLocation(NewLocation);
-	// Reset CurrentVelocity to zero initially
+	
+	if (!CurrentVelocity.IsNearlyZero())
+	{
+		const FVector NewLocation = GetActorLocation() + (CurrentVelocity * DeltaTime);
+		SetActorLocation(NewLocation);
+	}
 	CurrentVelocity = FVector(0.0f);
 }
 
@@ -69,16 +72,14 @@ void ACritter::Move(const FInputActionValue& Value)
 		if (MoveValue.Y != 0.f)
 		{
 			const FVector Direction = MoveRotation.RotateVector(FVector::ForwardVector);
-			AddMovementInput(Direction, MoveValue.Y);
-			CurrentVelocity.Y = FMath::Clamp(MoveValue.Y, -1.0f, 1.0f) * MaxSpeed;
+			CurrentVelocity += Direction * FMath::Clamp(MoveValue.Y, -1.0f, 1.0f) * MaxSpeed;
 		} 
 
 		// Right/Left direction
 		if(MoveValue.X != 0.f)
 		{
 			const FVector Direction = MoveRotation.RotateVector(FVector::RightVector);
-			AddMovementInput(Direction, MoveValue.X);
-			CurrentVelocity.X = FMath::Clamp(MoveValue.X, -1.0f, 1.0f) * MaxSpeed;
+			CurrentVelocity += Direction * FMath::Clamp(MoveValue.X, -1.0f, 1.0f) * MaxSpeed;
 		}
 	}
 }
