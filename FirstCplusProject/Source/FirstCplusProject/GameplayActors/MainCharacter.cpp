@@ -423,27 +423,42 @@ void AMainCharacter::Attack()
 
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
 	{
-		float PlayRate;
+		float PlayRate = 1.0f;
+		FName SectionName;
 		switch (FMath::RandRange(0, 1))
 		{
 		case 0:
 			PlayRate = 2.2f;
-			AnimInstance->Montage_Play(CombatMontage, PlayRate);
-			AnimInstance->Montage_JumpToSection(FName("Attack_1"), CombatMontage);
+			SectionName = FName("Attack_1");
+			
+			
 			break;
 		case 1:
 			PlayRate = 1.8f;
-			AnimInstance->Montage_Play(CombatMontage, PlayRate);
-			AnimInstance->Montage_JumpToSection(FName("Attack_2"), CombatMontage);
+			SectionName = FName("Attack_2");
 			break;
 		default:
 			break;
+		}
+		
+		AnimInstance->Montage_Play(CombatMontage, PlayRate);
+		AnimInstance->Montage_JumpToSection(SectionName, CombatMontage);
+		
+		
+		// Safety net: arm a timer in case the End notify fails to fire.
+		const int32 SectionIdx = CombatMontage->GetSectionIndex(SectionName);
+		if (SectionIdx != INDEX_NONE)
+		{
+			const float MontageLen = CombatMontage->GetSectionLength(SectionIdx) / PlayRate;
+			GetWorldTimerManager().SetTimer(AttackTimer, this, &AMainCharacter::AttackEnd, 
+				MontageLen + 0.05f, false);			
 		}
 	}
 }
 
 void AMainCharacter::AttackEnd()
 {
+	GetWorldTimerManager().ClearTimer(AttackTimer);
 	bAttacking = false;
 
 	if (bLMB)
