@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Enemy.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
@@ -13,6 +14,7 @@
 class UParticleSystem;
 class USoundCue;
 class UBoxComponent;
+class AEnemy;
 
 
 UENUM(BlueprintType)
@@ -61,6 +63,19 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float MinSprintStamina;
+	
+	float InterpSpeed;
+	bool  bInterpToEnemy;
+	void SetInterpToEnemy(bool Interp);
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	AEnemy* CombatTarget;
+	
+	FORCEINLINE void SetCombatTarget(AEnemy* Target) { CombatTarget = Target; }
+	
+	FRotator GetLookAtRotationYaw(const FVector& Target) const;
+	
+	void InterpToEnemy();
 	
 	void SetMovementStatus(EMovementStatus NewMovementStatus);
 	void UpdateMovementSpeed() const;

@@ -3,6 +3,7 @@
 
 #include "Enemy.h"
 
+#include "MainCharacter.h"
 #include "Animation/AnimMontage.h"
 #include "Components/BoxComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
@@ -141,6 +142,7 @@ void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent
 		if (AMainCharacter* MainCharacter = Cast<AMainCharacter>(OtherActor))
 		{
 			bOverlappingCombatSphere = true;
+			MainCharacter->SetCombatTarget(this);
 			CombatTarget = MainCharacter;
 			Attack();
 		}
@@ -151,10 +153,12 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
 {
 	if (OtherActor)
 	{
-		if (const AMainCharacter* MainCharacter = Cast<AMainCharacter>(OtherActor))
+		if (AMainCharacter* MainCharacter = Cast<AMainCharacter>(OtherActor))
 		{
 			bOverlappingCombatSphere = false;
 			GetWorldTimerManager().ClearTimer(AttackTimerHandle);
+			
+			MainCharacter->SetCombatTarget(nullptr);
 
 			// Only clear combat target if the leaving pawn was our target and no longer in agro range.
 			if (CombatTarget == MainCharacter)

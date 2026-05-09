@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 
-#include "MainCharacter.h"
 #include "Runtime/AIModule/Classes/AIController.h"
 #include "Components/SphereComponent.h"
 

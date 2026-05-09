@@ -13,6 +13,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Sound/SoundCue.h"
 
 // Sets default values
@@ -69,12 +70,14 @@ AMainCharacter::AMainCharacter()
 
 	StaminaDrainRate = 25.f;
 	MinSprintStamina = 50.0f;
+	InterpSpeed = 25.f;
 
 	// Initialize boolean flags
 	bIsDead = false;
 	bAttacking = false;
 	bSprinting = false;
 	bLMB = false;
+	bInterpToEnemy = false;
 }
 
 void AMainCharacter::ShowPickupLocations()
@@ -164,6 +167,18 @@ void AMainCharacter::Tick(float DeltaTime)
 	else
 	{
 		HandleNotSprinting(DeltaStamina);
+	}
+	
+	InterpToEnemy();
+}
+
+void AMainCharacter::InterpToEnemy()
+{
+	if (bInterpToEnemy && CombatTarget)
+	{
+		const FRotator LookAtRotation = GetLookAtRotationYaw(CombatTarget->GetActorLocation());
+		const FRotator InterpRotation = FMath::RInterpTo(GetActorRotation(), LookAtRotation, GetWorld()->GetDeltaSeconds(), InterpSpeed);
+		SetActorRotation(InterpRotation);
 	}
 }
 
@@ -330,6 +345,11 @@ void AMainCharacter::LMBUp(const FInputActionValue& Value)
 	}
 }
 
+FRotator AMainCharacter::GetLookAtRotationYaw(const FVector& Target) const
+{
+	const FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Target);
+	return FRotator(0.f, LookAtRotation.Yaw, 0.f);
+}
 
 void AMainCharacter::SetMovementStatus(const EMovementStatus NewMovementStatus)
 {
@@ -437,6 +457,7 @@ void AMainCharacter::Attack()
 	if (bAttacking) return;
 
 	bAttacking = true;
+	SetInterpToEnemy(true);
 
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
 	{
@@ -477,6 +498,7 @@ void AMainCharacter::AttackEnd()
 {
 	GetWorldTimerManager().ClearTimer(AttackTimer);
 	bAttacking = false;
+	SetInterpToEnemy(false);
 
 	if (bLMB)
 	{
@@ -488,4 +510,9 @@ void AMainCharacter::PlaySwingSound() const
 {
 	if (!EquippedWeapon || !EquippedWeapon->SwingSound) return;
 	UGameplayStatics::PlaySound2D(this, EquippedWeapon->SwingSound);
+}
+
+void AMainCharacter::SetInterpToEnemy(const bool Interp)
+{
+	bInterpToEnemy = Interp;
 }
