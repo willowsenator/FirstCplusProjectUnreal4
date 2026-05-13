@@ -85,6 +85,12 @@ public:
 
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	float AttackMinTime;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	float AttackMaxTime;
 
 
 protected:

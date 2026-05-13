@@ -42,6 +42,9 @@ AEnemy::AEnemy()
 	MaxHealth = 100.f;
 	Damage = 10.f;
 	
+	AttackMinTime = .5f;
+	AttackMaxTime = 3.5f;
+	
 	bCanAttack = true;
 	
 	// Steer around other AIs instead of pushing through their capsules
@@ -271,8 +274,9 @@ void AEnemy::AttackEnd()
 	// If still in combat sphere, schedule next attack
 	if (bOverlappingCombatSphere && CombatTarget)
 	{
+		const float AttackTime = FMath::RandRange(AttackMinTime, AttackMaxTime);
 		SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
-		GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &AEnemy::Attack, FMath::RandRange(0.5f, 1.2f), false);
+		GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &AEnemy::Attack, AttackTime);
 		return;
 	}
 
