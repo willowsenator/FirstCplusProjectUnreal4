@@ -118,12 +118,19 @@ void AMainCharacter::Die()
 	
 	// Disable collision
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	
-	// TODO: Play death animation
-	// TODO: Trigger respawn timer
-	// TODO: Notify GameMode
-	
-	UE_LOG(LogTemp, Warning, TEXT("Player died at location: %s"), *GetActorLocation().ToString());
+
+	if (const auto AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
+	{
+		AnimInstance->Montage_Play(CombatMontage, 1.0f);
+		AnimInstance->Montage_JumpToSection(FName("Death"), CombatMontage);
+	}
+}
+
+float AMainCharacter::TakeDamage(const float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+	DecreaseHealth(DamageAmount);
+	return DamageAmount;
 }
 
 void AMainCharacter::IncrementCoins(const int32 Amount)

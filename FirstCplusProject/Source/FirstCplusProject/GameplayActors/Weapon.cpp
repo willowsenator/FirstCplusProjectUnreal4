@@ -75,6 +75,8 @@ void AWeapon::Equip(AMainCharacter* Char)
 {
 	if (Char)
 	{
+		SetWeaponInstigator(Char->GetController());
+		
 		// Update weapon state first
 		SetWeaponState(EWeaponState::Ews_Equipped);
 		
@@ -115,7 +117,7 @@ void AWeapon::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) 
 {
 	if (OtherActor == GetOwner()) return; // Ignore if overlapping with the weapon's owner
-	if (const AEnemy *Enemy = Cast<AEnemy>(OtherActor); Enemy)
+	if (AEnemy *Enemy = Cast<AEnemy>(OtherActor); Enemy)
 	{
 		if (Enemy->HitParticles)
 		{
@@ -131,6 +133,11 @@ void AWeapon::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 		if (Enemy->HitSound)
 		{
 			UGameplayStatics::PlaySound2D(this, Enemy->HitSound);
+		}
+		
+		if (DamageTypeClass)
+		{
+			UGameplayStatics::ApplyDamage(Enemy, Damage, WeaponInstigator, this, DamageTypeClass);
 		}
 	}
 }

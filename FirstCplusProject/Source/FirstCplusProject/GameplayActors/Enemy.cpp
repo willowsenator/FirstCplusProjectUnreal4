@@ -6,6 +6,7 @@
 #include "MainCharacter.h"
 #include "Animation/AnimMontage.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -51,6 +52,52 @@ AEnemy::AEnemy()
 	GetCharacterMovement()->bUseRVOAvoidance = true;
 	GetCharacterMovement()->AvoidanceWeight = 0.5f;
 	GetCharacterMovement()->AvoidanceConsiderationRadius = 500.f;
+}
+
+float AEnemy::TakeDamage(const float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator,
+	AActor* DamageCauser)
+{
+	DecreaseHealth(DamageAmount);
+	return DamageAmount;
+}
+
+void AEnemy::DecreaseHealth(const float Amount)
+{
+	if (Health - Amount <= 0.f)
+	{
+		Health = 0.f;
+		Die();
+	}
+	else
+	{
+		Health -= Amount;
+	}
+}
+
+void AEnemy::Die()
+{
+	if (const auto AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
+	{
+		AnimInstance->Montage_Play(CombatMontage, 1.0f);
+		AnimInstance->Montage_JumpToSection(FName("Death"), CombatMontage);
+	}
+	
+	SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Dead);
+	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AgroSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CombatSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AEnemy::DeathEnd() const
+{
+	GetMesh()->bPauseAnims = true;
+	GetMesh()->bNoSkeletonUpdate = true;
+}
+
+bool AEnemy::Alive() const
+{
+	return EnemyMovementStatus != EEnemyMovementStatus::EMS_Dead;
 }
 
 // Called when the game starts or when spawned
@@ -104,7 +151,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AEnemy::AgroSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor)
+	if (OtherActor && Alive())
 	{
 		if (AMainCharacter* MainCharacter = Cast<AMainCharacter>(OtherActor))
 		{
@@ -140,7 +187,7 @@ void AEnemy::AgroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AA
 
 void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor)
+	if (OtherActor && Alive())
 	{
 		if (AMainCharacter* MainCharacter = Cast<AMainCharacter>(OtherActor))
 		{
@@ -215,43 +262,45 @@ void AEnemy::MoveToTarget(const APawn* Target)
 
 void AEnemy::Attack()
 {
-	if (!bOverlappingCombatSphere || !CombatTarget) return;
+	if (Alive())
+	{
+		if (!bOverlappingCombatSphere || !CombatTarget) return;
 	
-	if (AIController)
-	{
-		AIController->StopMovement();
-		SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Attacking);
-	}
-
-	// Turn to face the combat target
-	if (CombatTarget)
-	{
-		const FVector DirectionToTarget = (CombatTarget->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-		const FRotator RotationToTarget = DirectionToTarget.Rotation();
-		SetActorRotation(FRotator(0.0f, RotationToTarget.Yaw, 0.0f));
-	}
-
-	if (bCanAttack)
-	{
-		bCanAttack = false;
-		bAttackEndHandled = false;
-		if (UAnimInstance *AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
+		if (AIController)
 		{
-			AnimInstance->Montage_Play(CombatMontage, 1.35f);
-			AnimInstance->Montage_JumpToSection(FName("Attack"), CombatMontage);
+			AIController->StopMovement();
+			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Attacking);
+		}
 
-			// Bind the montage end callback so AttackEnd() gets called when montage finishes
-			FOnMontageEnded EndDelegate;
-			EndDelegate.BindUObject(this, &AEnemy::OnAttackMontageEnded);
-			AnimInstance->Montage_SetEndDelegate(EndDelegate, CombatMontage);
-			
-			if (SwingSound)
+		// Turn to face the combat target
+		if (CombatTarget)
+		{
+			const FVector DirectionToTarget = (CombatTarget->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+			const FRotator RotationToTarget = DirectionToTarget.Rotation();
+			SetActorRotation(FRotator(0.0f, RotationToTarget.Yaw, 0.0f));
+		}
+
+		if (bCanAttack)
+		{
+			bCanAttack = false;
+			bAttackEndHandled = false;
+			if (UAnimInstance *AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
 			{
-				UGameplayStatics::PlaySound2D(this, SwingSound);
+				AnimInstance->Montage_Play(CombatMontage, 1.35f);
+				AnimInstance->Montage_JumpToSection(FName("Attack"), CombatMontage);
+
+				// Bind the montage end callback so AttackEnd() gets called when montage finishes
+				FOnMontageEnded EndDelegate;
+				EndDelegate.BindUObject(this, &AEnemy::OnAttackMontageEnded);
+				AnimInstance->Montage_SetEndDelegate(EndDelegate, CombatMontage);
+			
+				if (SwingSound)
+				{
+					UGameplayStatics::PlaySound2D(this, SwingSound);
+				}
 			}
 		}
 	}
-	
 }
 
 void AEnemy::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
@@ -303,7 +352,7 @@ void AEnemy::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAct
 {
 	if (!OtherActor || OtherActor == this) return;
 	if (Cast<AEnemy>(OtherActor)) return; // skip enemy vs enemy
-	if (const AMainCharacter *MainCharacter = Cast<AMainCharacter>(OtherActor); MainCharacter)
+	if (AMainCharacter *MainCharacter = Cast<AMainCharacter>(OtherActor); MainCharacter)
 	{
 		if (MainCharacter->HitParticles)
 		{
@@ -319,6 +368,13 @@ void AEnemy::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAct
 		if (MainCharacter->HitSound)
 		{
 			UGameplayStatics::PlaySound2D(this, MainCharacter->HitSound);
+		}
+		
+		
+		// Apply Dame to MainCharacter
+		if (DamageTypeClass)
+		{
+			UGameplayStatics::ApplyDamage(MainCharacter, Damage, AIController, this, DamageTypeClass);
 		}
 	}
 }
