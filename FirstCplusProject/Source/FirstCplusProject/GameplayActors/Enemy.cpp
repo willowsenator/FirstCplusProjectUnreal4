@@ -48,6 +48,8 @@ AEnemy::AEnemy()
 	
 	bCanAttack = true;
 	
+	DeathDelay = 3.f;
+	
 	// Steer around other AIs instead of pushing through their capsules
 	GetCharacterMovement()->bUseRVOAvoidance = true;
 	GetCharacterMovement()->AvoidanceWeight = 0.5f;
@@ -89,15 +91,24 @@ void AEnemy::Die()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-void AEnemy::DeathEnd() const
+void AEnemy::DeathEnd()
 {
-	GetMesh()->bPauseAnims = true;
-	GetMesh()->bNoSkeletonUpdate = true;
+	const auto MeshComp = GetMesh();
+	if (!MeshComp) return;
+	MeshComp->bPauseAnims = true;
+	MeshComp->bNoSkeletonUpdate = true;
+	GetWorldTimerManager().SetTimer(DeathTimerHandle, this, &AEnemy::Disappear, 
+				DeathDelay);
 }
 
 bool AEnemy::Alive() const
 {
 	return EnemyMovementStatus != EEnemyMovementStatus::EMS_Dead;
+}
+
+void AEnemy::Disappear()
+{
+	Destroy();
 }
 
 // Called when the game starts or when spawned

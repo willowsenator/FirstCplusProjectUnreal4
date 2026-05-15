@@ -96,13 +96,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
 	TSubclassOf<UDamageType> DamageTypeClass;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	float DeathDelay;
+	
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	void DecreaseHealth(float Amount);
 	void Die();
 	UFUNCTION(BlueprintCallable)
-	void DeathEnd() const;
+	void DeathEnd();
 
 	bool Alive() const;
+	
+	void Disappear();
 
 protected:
 	// Called when the game starts or when spawned
@@ -152,4 +157,6 @@ private:
 	
 	// Member-scoped so disengage paths can clear a pending re-attack
 	FTimerHandle AttackTimerHandle;
+	
+	FTimerHandle DeathTimerHandle;
 };
