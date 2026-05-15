@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
+#include "MainPlayerController.h"
 #include "Weapon.h"
 #include "MainCharacter.generated.h"
 
@@ -45,6 +46,17 @@ class FIRSTCPLUSPROJECT_API AMainCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AMainCharacter();
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	bool bHasCombatTarget;
+	
+	FORCEINLINE void SetHasCombatTarget(const bool HasTarget) { bHasCombatTarget = HasTarget; }
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
+	FVector CombatTargetLocation;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Controller")
+	AMainPlayerController* MainPlayerController;
 	
 	TArray<FVector> PickupLocations;
 	UFUNCTION(BlueprintCallable)

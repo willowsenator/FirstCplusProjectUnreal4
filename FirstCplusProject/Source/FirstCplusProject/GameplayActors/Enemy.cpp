@@ -176,8 +176,14 @@ void AEnemy::AgroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AA
 {
 	if (OtherActor)
 	{
-		if (const AMainCharacter* MainCharacter = Cast<AMainCharacter>(OtherActor))
+		if (AMainCharacter* MainCharacter = Cast<AMainCharacter>(OtherActor))
 		{
+			MainCharacter->SetHasCombatTarget(false);
+			if (const auto MainPlayerController = MainCharacter->MainPlayerController)
+			{
+				MainPlayerController->RemoveEnemyHealthBar();
+			}
+			
 			if (CombatTarget == MainCharacter)
 			{
 				CombatTarget = nullptr;
@@ -204,6 +210,11 @@ void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent
 		{
 			bOverlappingCombatSphere = true;
 			MainCharacter->SetCombatTarget(this);
+			MainCharacter->SetHasCombatTarget(true);
+			if (const auto MainPlayerController = MainCharacter->MainPlayerController)
+			{
+				MainPlayerController->DisplayEnemyHealthBar();
+			}
 			CombatTarget = MainCharacter;
 			Attack();
 		}
@@ -218,15 +229,12 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
 		{
 			bOverlappingCombatSphere = false;
 			GetWorldTimerManager().ClearTimer(AttackTimerHandle);
-			
-			MainCharacter->SetCombatTarget(nullptr);
 
 			// Only clear combat target if the leaving pawn was our target and no longer in agro range.
 			if (CombatTarget == MainCharacter)
 			{
 				if (!AgroSphere || !AgroSphere->IsOverlappingActor(MainCharacter))
 				{
-					CombatTarget = nullptr;
 					SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
 				}
 				else

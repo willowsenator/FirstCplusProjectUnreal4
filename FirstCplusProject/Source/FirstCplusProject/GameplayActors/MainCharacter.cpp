@@ -63,6 +63,8 @@ AMainCharacter::AMainCharacter()
 
 	RunningSpeed = 650.0f;
 	SprintingSpeed = 950.0f;
+	
+	bHasCombatTarget = false;
 
 	// Initialize enums
 	MovementStatus = EMovementStatus::EMS_Normal;
@@ -145,6 +147,8 @@ void AMainCharacter::IncrementCoins(const int32 Amount)
 void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	MainPlayerController = Cast<AMainPlayerController>(GetController());
 
 	if (CombatMontage)
 	{
@@ -177,6 +181,16 @@ void AMainCharacter::Tick(float DeltaTime)
 	}
 	
 	InterpToEnemy();
+	
+	if (CombatTarget)
+	{
+		CombatTargetLocation = CombatTarget->GetActorLocation();
+		
+		if (MainPlayerController)
+		{
+			MainPlayerController->EnemyLocation = CombatTargetLocation;
+		}
+	}
 }
 
 void AMainCharacter::InterpToEnemy()
