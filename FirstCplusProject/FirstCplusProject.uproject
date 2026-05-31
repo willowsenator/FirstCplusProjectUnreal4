@@ -12,6 +12,11 @@
 				"CoreUObject",
 				"Engine"
 			]
+		},
+		{
+			"Name": "FirstCplusProjectTests",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
