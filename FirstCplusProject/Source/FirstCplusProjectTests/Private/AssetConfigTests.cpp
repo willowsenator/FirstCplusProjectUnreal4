@@ -31,6 +31,7 @@ bool FFirstCplusProjectTests_EnemyBP_HasRequiredAssetSlots::RunTest(const FStrin
 	TestNotNull(TEXT("CombatMontage is set"), Default->CombatMontage);
 	TestNotNull(TEXT("HitParticles is set"), Default->HitParticles);
 	TestNotNull(TEXT("HitSound is set"), Default->HitSound);
+	TestNotNull(TEXT("SwingSound is set"), Default->SwingSound);
 
 	return true;
 }
@@ -95,6 +96,8 @@ bool FFirstCplusProjectTests_MainCharacterBP_HasRequiredAssetSlots::RunTest(cons
 	TestNotNull(TEXT("InputStopSprinting is set"), Default->InputStopSprinting);
 	TestNotNull(TEXT("InputLMBDown is set"), Default->InputLMBDown);
 	TestNotNull(TEXT("InputLMBUp is set"), Default->InputLMBUp);
+	TestNotNull(TEXT("HitParticles is set"), Default->HitParticles);
+	TestNotNull(TEXT("HitSound is set"), Default->HitSound);
 
 	return true;
 }

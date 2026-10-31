@@ -59,6 +59,11 @@ AEnemy::AEnemy()
 float AEnemy::TakeDamage(const float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator,
 	AActor* DamageCauser)
 {
+	if (!Alive())
+	{
+		return 0.f;
+	}
+
 	DecreaseHealth(DamageAmount);
 	return DamageAmount;
 }
@@ -78,6 +83,18 @@ void AEnemy::DecreaseHealth(const float Amount)
 
 void AEnemy::Die()
 {
+	if (!Alive())
+	{
+		return;
+	}
+
+	GetWorldTimerManager().ClearTimer(AttackTimerHandle);
+	if (AIController)
+	{
+		AIController->StopMovement();
+	}
+	GetCharacterMovement()->DisableMovement();
+
 	if (const auto AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
 	{
 		AnimInstance->Montage_Play(CombatMontage, 1.0f);
@@ -144,6 +161,12 @@ void AEnemy::BeginPlay()
 
 void AEnemy::SetEnemyMovementStatus(const EEnemyMovementStatus NewStatus)
 {
+	// Death is terminal: overlap-end and attack-end handlers must not revive a corpse.
+	if (!Alive())
+	{
+		return;
+	}
+
 	EnemyMovementStatus = NewStatus;
 }
 

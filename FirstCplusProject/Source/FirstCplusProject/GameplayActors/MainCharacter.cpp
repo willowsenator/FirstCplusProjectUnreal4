@@ -121,7 +121,12 @@ void AMainCharacter::Die()
 	GetCharacterMovement()->StopMovementImmediately();
 	bSprinting = false;
 	bInterpToEnemy = false;
-	
+
+	// Input is disabled, so the button-up event never arrives: release the swing state here.
+	GetWorldTimerManager().ClearTimer(AttackTimer);
+	bLMB = false;
+	bAttacking = false;
+
 	// Disable collision
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -482,6 +487,8 @@ void AMainCharacter::HandleNotSprinting(const float DeltaStamina)
 
 void AMainCharacter::Attack()
 {
+	if (bIsDead) return;
+
 	if (!EquippedWeapon)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Cannot attack - no weapon equipped"));
