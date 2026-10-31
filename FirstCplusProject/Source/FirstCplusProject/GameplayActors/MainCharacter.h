@@ -23,7 +23,6 @@ enum class EMovementStatus : uint8
 {
 	EMS_Normal UMETA(DisplayName = "Normal"),
 	EMS_Sprinting UMETA(DisplayName = "Sprinting"),
-	
 	EMS_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
@@ -192,12 +191,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player Stats")
 	bool bIsDead;
+	
+	UFUNCTION(BlueprintCallable, Category = "Player Stats")
+	void DeathEnd() const;
 
-protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

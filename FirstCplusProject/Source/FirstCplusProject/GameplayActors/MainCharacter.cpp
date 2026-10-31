@@ -118,6 +118,10 @@ void AMainCharacter::Die()
 	// Stop movement
 	GetCharacterMovement()->DisableMovement();
 	
+	GetCharacterMovement()->StopMovementImmediately();
+	bSprinting = false;
+	bInterpToEnemy = false;
+	
 	// Disable collision
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -143,6 +147,15 @@ void AMainCharacter::IncrementCoins(const int32 Amount)
 	}
 }
 
+void AMainCharacter::DeathEnd() const
+{
+	if (USkeletalMeshComponent* MeshComp = GetMesh())
+	{
+		MeshComp->bPauseAnims = true;
+		MeshComp->bNoSkeletonUpdate = true;
+	}
+}
+
 // Called when the game starts or when spawned
 void AMainCharacter::BeginPlay()
 {
@@ -165,7 +178,7 @@ void AMainCharacter::BeginPlay()
 }
 
 // Called every frame
-void AMainCharacter::Tick(float DeltaTime)
+void AMainCharacter::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
