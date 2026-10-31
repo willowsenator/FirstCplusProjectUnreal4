@@ -2,9 +2,9 @@
 
 public class FirstCplusProjectTests : ModuleRules
 {
-    public FirstCplusProjectTests(ReadOnlyTargetRules Target) : base(Target)
+    public FirstCplusProjectTests(ReadOnlyTargetRules target) : base(target)
     {
-        PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
         PublicDependencyModuleNames.AddRange(
             [
@@ -19,7 +19,8 @@ public class FirstCplusProjectTests : ModuleRules
                 "UnrealEd",
                 "FirstCplusProject",
                 "Slate",
-                "SlateCore"
+                "SlateCore",
+                "UMG"
             ]
         );
     }
