@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Modules:** `FirstCplusProject` (runtime; API macro `FIRSTCPLUSPROJECT_API`) and `FirstCplusProjectTests` (editor-only automation tests).
 - **Plugins enabled:** `EnhancedInput` (runtime), `ModelingToolsEditorMode`, `ModelContextProtocol` and `AllToolsets` (both restricted by `TargetAllowList`), `RemoteControl`, `PythonScriptPlugin`.
 - **Public deps** (`FirstCplusProject.Build.cs`): `Core`, `CoreUObject`, `Engine`, `InputCore`, `EnhancedInput`, `Niagara`, `UMG`, `AIModule`, `AnimationCore`, `AnimGraphRuntime`. **Private:** `Slate`, `SlateCore`. Add new deps here when including their headers.
-- **Build settings:** `BuildSettingsVersion.V6` on the game target and `Latest` on the editor target, `IncludeOrderVersion.Latest`, `PCHUsage = UseExplicitOrSharedPCHs` — explicit includes are required (no monolithic PCH).
+- **Build settings:** `BuildSettingsVersion.V7` on the game target (V6 no longer builds on 5.8: its warning levels differ from the shared engine build environment) and `Latest` on the editor target, `IncludeOrderVersion.Latest`, `PCHUsage = UseExplicitOrSharedPCHs` — explicit includes are required (no monolithic PCH).
 
 ## Building and Running
 
