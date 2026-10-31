@@ -4,29 +4,29 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-- **Engine:** Unreal Engine **5.7** (`EngineAssociation` in `FirstCplusProject.uproject`).
+- **Engine:** Unreal Engine **5.8** (`EngineAssociation` in `FirstCplusProject.uproject`).
 - **Type:** C++ Game module (`Source/FirstCplusProject.Target.cs` → `TargetType.Game`).
-- **Module name:** `FirstCplusProject` (single runtime module). API macro: `FIRSTCPLUSPROJECT_API`.
-- **Plugins enabled:** `EnhancedInput` (runtime), `ModelingToolsEditorMode` (editor-only).
+- **Modules:** `FirstCplusProject` (runtime; API macro `FIRSTCPLUSPROJECT_API`) and `FirstCplusProjectTests` (editor-only automation tests).
+- **Plugins enabled:** `EnhancedInput` (runtime), `ModelingToolsEditorMode`, `ModelContextProtocol` and `AllToolsets` (both restricted by `TargetAllowList`), `RemoteControl`, `PythonScriptPlugin`.
 - **Public deps** (`FirstCplusProject.Build.cs`): `Core`, `CoreUObject`, `Engine`, `InputCore`, `EnhancedInput`, `Niagara`, `UMG`, `AIModule`, `AnimationCore`, `AnimGraphRuntime`. **Private:** `Slate`, `SlateCore`. Add new deps here when including their headers.
-- **Build settings:** `BuildSettingsVersion.V5`, `IncludeOrderVersion.Latest`, `PCHUsage = UseExplicitOrSharedPCHs` — explicit includes are required (no monolithic PCH).
+- **Build settings:** `BuildSettingsVersion.V7` on the game target (V6 no longer builds on 5.8: its warning levels differ from the shared engine build environment) and `Latest` on the editor target, `IncludeOrderVersion.Latest`, `PCHUsage = UseExplicitOrSharedPCHs` — explicit includes are required (no monolithic PCH).
 
 ## Building and Running
 
-This is a Windows project (`.sln`/`.vs/`/Visual Studio + UE 5.7). There is **no `dotnet`/`make`/`cmake`** layer — UnrealBuildTool drives everything.
+This is a Windows project (`.sln`/`.vs/`/Visual Studio + UE 5.8). There is **no `dotnet`/`make`/`cmake`** layer — UnrealBuildTool drives everything.
 
 - **Regenerate project files** (after adding/removing `.cpp`/`.h`): right-click `FirstCplusProject.uproject` → *Generate Visual Studio project files*, or:
   ```
-  "C:\Program Files\Epic Games\UE_5.7\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.exe" -projectfiles -project="<abs path>\FirstCplusProject.uproject" -game -rocket -progress
+  "D:\Games\Epic Games\UE_5.8\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.exe" -projectfiles -project="<abs path>\FirstCplusProject.uproject" -game -rocket -progress
   ```
 - **Build (editor target)** from CLI:
   ```
-  "C:\Program Files\Epic Games\UE_5.7\Engine\Build\BatchFiles\Build.bat" FirstCplusProjectEditor Win64 Development -Project="<abs path>\FirstCplusProject.uproject" -WaitMutex -FromMsBuild
+  "D:\Games\Epic Games\UE_5.8\Engine\Build\BatchFiles\Build.bat" FirstCplusProjectEditor Win64 Development -Project="<abs path>\FirstCplusProject.uproject" -WaitMutex -FromMsBuild
   ```
 - **Build (game target):** replace `FirstCplusProjectEditor` with `FirstCplusProject`.
 - **Run editor:** open `FirstCplusProject.uproject` (double-click) or `UnrealEditor.exe "<abs path>\FirstCplusProject.uproject"`.
 - **Hot Reload / Live Coding:** use Live Coding from inside the editor (Ctrl+Alt+F11) for iterative C++ changes. Header-layout changes (new `UPROPERTY`, new fields) require a full editor restart and rebuild.
-- **Tests:** the project has **no Automation Test specs** (no `*Tests` module). Don't claim test runs you didn't do — verify changes by building both targets and exercising the gameplay path in PIE.
+- **Tests:** Automation tests live in the editor-only `FirstCplusProjectTests` module (sanity test, combat world fixture helpers, asset-config tests). Don't claim test runs you didn't do — build both targets, run the automation tests in the editor, and exercise the gameplay path in PIE.
 
 ## Source Layout
 
@@ -39,6 +39,10 @@ Source/
     FirstCplusProject.{h,cpp}           # module impl (IMPLEMENT_PRIMARY_GAME_MODULE)
     MyObject.{h,cpp}                    # plain UObject example
     GameplayActors/                     # all gameplay code lives here
+  FirstCplusProjectTests/               # editor-only automation tests
+    FirstCplusProjectTests.Build.cs
+    Private/                            # tests and combat fixture helpers
+    Public/
 ```
 
 Every `.h` defining a `UCLASS`/`USTRUCT`/`UENUM` must end with `#include "<Name>.generated.h"` as its **last** include — Unreal Header Tool regenerates these on build. Don't hand-edit generated files under `Intermediate/`.
@@ -55,6 +59,8 @@ A single-player action game with a player character, AI enemies, weapon pickups,
   - **Camera rig:** `USpringArmComponent CameraBoom` + `UCameraComponent FollowCamera`, controller-rotation driven on the boom only.
   - **Stats:** `Health/MaxHealth`, `Stamina/MaxStamina`, `Coins/MaxCoins`, plus enums `EMovementStatus` (Normal/Sprinting) and `EStaminaStatus` (Normal/BelowMinimum/Exhausted/ExhaustedRecovering). Sprint drains stamina at `StaminaDrainRate`; `MinSprintStamina` gates re-entry into sprint after exhaustion. Speed switches between `RunningSpeed` and `SprintingSpeed` via `UpdateMovementSpeed()`.
   - **Combat:** holds `EquippedWeapon` (`AWeapon*`) and `ActiveOverlappingItem` (`AItem*`). `Attack()` plays `CombatMontage`; `AttackEnd()` is `BlueprintCallable` (called from anim notify) and is also backed by a `FTimerHandle AttackTimer` safety in case the notify is missing. `bAttacking`/`bLMB` flags coordinate with the AnimInstance.
+  - **Combat targeting:** `CombatTarget` (`AEnemy*`) and `bHasCombatTarget` are set by the enemy's combat sphere; `bInterpToEnemy` makes `InterpToEnemy()` turn the character toward the target during a swing. `TakeDamage()` is overridden.
+  - **Enemy health bar:** `AMainCharacter` ticks to show/hide the `WEnemyHealthBar` widget over the current target (`DisplayEnemyHealthBar()`/`RemoveEnemyHealthBar()`), using the cached `MainPlayerController`.
   - **Death:** `Die()` sets `bIsDead`, used to gate input/movement.
 - **Input is Enhanced Input.** All actions are `UInputAction*` `UPROPERTY`s set in the BP defaults (Move, Look, TurnRate, LookUpRate, StartJumping/StopJumping, StartSprinting/StopSprinting, LMBDown/LMBUp), bound through `UEnhancedInputComponent` in `SetupPlayerInputComponent`. The mapping context (`UInputMappingContext* InputMapping`) is asset-set in BP and lives at `Content/Input/MainInputMappingContext.uasset`. Don't add legacy `BindAxis`/`BindAction` calls.
 - **`AMainPlayerController`** spawns the HUD UMG widget (`HUDOverlayAsset` → `HUDOverlay`) on `BeginPlay`.
@@ -71,7 +77,7 @@ A single-player action game with a player character, AI enemies, weapon pickups,
 ### Items, Weapons, Pickups
 
 - **`AItem`** is the base class: `USphereComponent CollisionVolume`, `UStaticMeshComponent Mesh`, optional `UNiagaraComponent IdleParticlesComponent` + `UNiagaraSystem* OverlapParticles`, `USoundCue* OverlapSound`, idle rotation toggle. Overlap delegates are virtual — subclasses override.
-- **`AWeapon : AItem`** adds `EWeaponState` (Pickup/Equipped), `UBoxComponent CombatCollision`, equip/swing sounds, and `Equip(AMainCharacter*)` to attach to the character's `RightHandSocket`. Same `ActivateCollision`/`DeactivateCollision` pattern as `AEnemy` — anim notifies on the player's `CombatMontage` toggle the weapon's hit volume.
+- **`AWeapon : AItem`** adds `EWeaponState` (Pickup/Equipped), `UBoxComponent CombatCollision`, equip/swing sounds, a `DamageTypeClass` and `WeaponInstigator` (the damage-causing controller), and `Equip(AMainCharacter*)` to attach to the character's `RightHandSocket`. Same `ActivateCollision`/`DeactivateCollision` pattern as `AEnemy` — anim notifies on the player's `CombatMontage` toggle the weapon's hit volume.
 - **`APickup : AItem`** — coin/health/etc. consumables.
 - **`AExplosive : AItem`** — damage-on-overlap variant.
 - Floor/movement props: **`AFloor​Switch`**, **`AFloater`**, **`AFloatingPlatform`**, **`ASpawnVolume`**.
@@ -100,4 +106,4 @@ A single-player action game with a player character, AI enemies, weapon pickups,
 
 ## Other Files in the Repo
 
-`CODE_FIX_PLAN.md`, `QUICK_FIX_CHECKLIST.md`, `README_FIX_PACKAGE.md`, `GIT_COMMIT_GUIDE.md`, `PROGRESS_SUMMARY.md` are artifacts from a one-off code-review pass (dated 2025-12-08). They are **not** project documentation — treat them as historical notes, not authoritative guidance. The current branch (`feat/combat`) has already addressed the crash fixes those documents describe.
+`CODE_FIX_PLAN.md`, `QUICK_FIX_CHECKLIST.md`, `README_FIX_PACKAGE.md`, `GIT_COMMIT_GUIDE.md`, `PROGRESS_SUMMARY.md` are artifacts from a one-off code-review pass (dated 2025-12-08). They are **not** project documentation — treat them as historical notes, not authoritative guidance. The current branch (`feat/combat-systems`) has already addressed the crash fixes those documents describe.

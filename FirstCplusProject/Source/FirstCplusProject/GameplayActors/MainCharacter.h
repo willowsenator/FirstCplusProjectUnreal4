@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Enemy.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
+#include "MainPlayerController.h"
 #include "Weapon.h"
 #include "MainCharacter.generated.h"
 
@@ -13,6 +15,7 @@
 class UParticleSystem;
 class USoundCue;
 class UBoxComponent;
+class AEnemy;
 
 
 UENUM(BlueprintType)
@@ -20,7 +23,6 @@ enum class EMovementStatus : uint8
 {
 	EMS_Normal UMETA(DisplayName = "Normal"),
 	EMS_Sprinting UMETA(DisplayName = "Sprinting"),
-	
 	EMS_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
@@ -44,6 +46,17 @@ public:
 	// Sets default values for this character's properties
 	AMainCharacter();
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	bool bHasCombatTarget;
+	
+	FORCEINLINE void SetHasCombatTarget(const bool HasTarget) { bHasCombatTarget = HasTarget; }
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
+	FVector CombatTargetLocation;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Controller")
+	AMainPlayerController* MainPlayerController;
+	
 	TArray<FVector> PickupLocations;
 	UFUNCTION(BlueprintCallable)
 	void ShowPickupLocations();
@@ -61,6 +74,19 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float MinSprintStamina;
+	
+	float InterpSpeed;
+	bool  bInterpToEnemy;
+	void SetInterpToEnemy(bool Interp);
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	AEnemy* CombatTarget;
+	
+	FORCEINLINE void SetCombatTarget(AEnemy* Target) { CombatTarget = Target; }
+	
+	FRotator GetLookAtRotationYaw(const FVector& Target) const;
+	
+	void InterpToEnemy();
 	
 	void SetMovementStatus(EMovementStatus NewMovementStatus);
 	void UpdateMovementSpeed() const;
@@ -159,16 +185,18 @@ public:
 
 	void Die();
 	
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	
 	void IncrementCoins(int32 Amount);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player Stats")
 	bool bIsDead;
+	
+	UFUNCTION(BlueprintCallable, Category = "Player Stats")
+	void DeathEnd() const;
 
-protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

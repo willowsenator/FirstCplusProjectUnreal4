@@ -5,6 +5,7 @@
 
 # Per-developer agent config (not for the repo)
 .claude/
+.mcp.json
 
 # Visual Studio 2015 user specific files
 .vs/

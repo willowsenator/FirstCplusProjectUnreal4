@@ -13,6 +13,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Sound/SoundCue.h"
 
 // Sets default values
@@ -62,6 +63,8 @@ AMainCharacter::AMainCharacter()
 
 	RunningSpeed = 650.0f;
 	SprintingSpeed = 950.0f;
+	
+	bHasCombatTarget = false;
 
 	// Initialize enums
 	MovementStatus = EMovementStatus::EMS_Normal;
@@ -69,12 +72,14 @@ AMainCharacter::AMainCharacter()
 
 	StaminaDrainRate = 25.f;
 	MinSprintStamina = 50.0f;
+	InterpSpeed = 25.f;
 
 	// Initialize boolean flags
 	bIsDead = false;
 	bAttacking = false;
 	bSprinting = false;
 	bLMB = false;
+	bInterpToEnemy = false;
 }
 
 void AMainCharacter::ShowPickupLocations()
@@ -113,14 +118,30 @@ void AMainCharacter::Die()
 	// Stop movement
 	GetCharacterMovement()->DisableMovement();
 	
+	GetCharacterMovement()->StopMovementImmediately();
+	bSprinting = false;
+	bInterpToEnemy = false;
+
+	// Input is disabled, so the button-up event never arrives: release the swing state here.
+	GetWorldTimerManager().ClearTimer(AttackTimer);
+	bLMB = false;
+	bAttacking = false;
+
 	// Disable collision
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	
-	// TODO: Play death animation
-	// TODO: Trigger respawn timer
-	// TODO: Notify GameMode
-	
-	UE_LOG(LogTemp, Warning, TEXT("Player died at location: %s"), *GetActorLocation().ToString());
+
+	if (const auto AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
+	{
+		AnimInstance->Montage_Play(CombatMontage, 1.0f);
+		AnimInstance->Montage_JumpToSection(FName("Death"), CombatMontage);
+	}
+}
+
+float AMainCharacter::TakeDamage(const float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+	DecreaseHealth(DamageAmount);
+	return DamageAmount;
 }
 
 void AMainCharacter::IncrementCoins(const int32 Amount)
@@ -131,10 +152,21 @@ void AMainCharacter::IncrementCoins(const int32 Amount)
 	}
 }
 
+void AMainCharacter::DeathEnd() const
+{
+	if (USkeletalMeshComponent* MeshComp = GetMesh())
+	{
+		MeshComp->bPauseAnims = true;
+		MeshComp->bNoSkeletonUpdate = true;
+	}
+}
+
 // Called when the game starts or when spawned
 void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	MainPlayerController = Cast<AMainPlayerController>(GetController());
 
 	if (CombatMontage)
 	{
@@ -151,7 +183,7 @@ void AMainCharacter::BeginPlay()
 }
 
 // Called every frame
-void AMainCharacter::Tick(float DeltaTime)
+void AMainCharacter::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -164,6 +196,28 @@ void AMainCharacter::Tick(float DeltaTime)
 	else
 	{
 		HandleNotSprinting(DeltaStamina);
+	}
+	
+	InterpToEnemy();
+	
+	if (CombatTarget)
+	{
+		CombatTargetLocation = CombatTarget->GetActorLocation();
+		
+		if (MainPlayerController)
+		{
+			MainPlayerController->EnemyLocation = CombatTargetLocation;
+		}
+	}
+}
+
+void AMainCharacter::InterpToEnemy()
+{
+	if (bInterpToEnemy && CombatTarget)
+	{
+		const FRotator LookAtRotation = GetLookAtRotationYaw(CombatTarget->GetActorLocation());
+		const FRotator InterpRotation = FMath::RInterpTo(GetActorRotation(), LookAtRotation, GetWorld()->GetDeltaSeconds(), InterpSpeed);
+		SetActorRotation(InterpRotation);
 	}
 }
 
@@ -330,6 +384,11 @@ void AMainCharacter::LMBUp(const FInputActionValue& Value)
 	}
 }
 
+FRotator AMainCharacter::GetLookAtRotationYaw(const FVector& Target) const
+{
+	const FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Target);
+	return FRotator(0.f, LookAtRotation.Yaw, 0.f);
+}
 
 void AMainCharacter::SetMovementStatus(const EMovementStatus NewMovementStatus)
 {
@@ -428,6 +487,8 @@ void AMainCharacter::HandleNotSprinting(const float DeltaStamina)
 
 void AMainCharacter::Attack()
 {
+	if (bIsDead) return;
+
 	if (!EquippedWeapon)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Cannot attack - no weapon equipped"));
@@ -437,6 +498,7 @@ void AMainCharacter::Attack()
 	if (bAttacking) return;
 
 	bAttacking = true;
+	SetInterpToEnemy(true);
 
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && CombatMontage)
 	{
@@ -477,6 +539,7 @@ void AMainCharacter::AttackEnd()
 {
 	GetWorldTimerManager().ClearTimer(AttackTimer);
 	bAttacking = false;
+	SetInterpToEnemy(false);
 
 	if (bLMB)
 	{
@@ -488,4 +551,9 @@ void AMainCharacter::PlaySwingSound() const
 {
 	if (!EquippedWeapon || !EquippedWeapon->SwingSound) return;
 	UGameplayStatics::PlaySound2D(this, EquippedWeapon->SwingSound);
+}
+
+void AMainCharacter::SetInterpToEnemy(const bool Interp)
+{
+	bInterpToEnemy = Interp;
 }

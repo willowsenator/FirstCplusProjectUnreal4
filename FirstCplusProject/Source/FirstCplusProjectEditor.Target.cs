@@ -11,5 +11,10 @@ public class FirstCplusProjectEditorTarget : TargetRules
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 		
 		ExtraModuleNames.Add("FirstCplusProject");
+		RegisterModulesCreatedByRider();
+	}
+	private void RegisterModulesCreatedByRider()
+	{
+		ExtraModuleNames.AddRange(["FirstCplusProjectTests"]);
 	}
 }

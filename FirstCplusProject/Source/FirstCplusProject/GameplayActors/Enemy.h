@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 
-#include "MainCharacter.h"
 #include "Runtime/AIModule/Classes/AIController.h"
 #include "Components/SphereComponent.h"
 
@@ -23,6 +22,7 @@ enum class EEnemyMovementStatus : uint8
 	EMS_Idle UMETA(DisplayName = "Idle"),
 	EMS_MoveToTarget UMETA(DisplayName = "MoveToTarget"),
 	EMS_Attacking UMETA(DisplayName = "Attacking"),
+	EMS_Dead UMETA(DisplayName = "Dead"),
 
 	EMS_MAX UMETA(DisplayName = "DefaultMAX")
 };
@@ -86,7 +86,28 @@ public:
 
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	float AttackMinTime;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	float AttackMaxTime;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	TSubclassOf<UDamageType> DamageTypeClass;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	float DeathDelay;
+	
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	void DecreaseHealth(float Amount);
+	void Die();
+	UFUNCTION(BlueprintCallable)
+	void DeathEnd();
+
+	bool Alive() const;
+	
+	void Disappear();
 
 protected:
 	// Called when the game starts or when spawned
@@ -136,4 +157,6 @@ private:
 	
 	// Member-scoped so disengage paths can clear a pending re-attack
 	FTimerHandle AttackTimerHandle;
+	
+	FTimerHandle DeathTimerHandle;
 };
