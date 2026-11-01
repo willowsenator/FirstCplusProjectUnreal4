@@ -98,6 +98,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
 	float DeathDelay;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	float DeathEndFallbackDelay;
 	
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	void DecreaseHealth(float Amount);
@@ -152,6 +155,9 @@ public:
 	void DeactivateCollision() const;
 
 private:
+	bool bDeathEndHandled = false;
+	FTimerHandle DeathFallbackTimerHandle;
+
 	// Prevent double-processing AttackEnd when both notify and montage end fire.
 	bool bAttackEndHandled = false;
 	

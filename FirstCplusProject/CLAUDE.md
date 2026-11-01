@@ -69,6 +69,7 @@ A single-player action game with a player character, AI enemies, weapon pickups,
 ### Enemies and AI
 
 - **`AEnemy`** (`ACharacter`) drives all hostile NPCs. Detection/combat is **sphere-based**, not perception-component based:
+  - Enemy death uses a 5-second `DeathEndFallbackDelay` timer when the DeathEnd notify is missing; `DeathEnd()` handles completion once and destroys the enemy after `DeathDelay`.
   - **`AgroSphere`** (`USphereComponent`) — when the player overlaps, transition to `EMS_MoveToTarget` and the cached `AAIController* AIController` runs `MoveToTarget(MainCharacter)`. On overlap-end, return to idle.
   - **`CombatSphere`** (smaller `USphereComponent`) — when the player overlaps, transition to `EMS_Attacking` and call `Attack()` which plays `CombatMontage` and rotates toward the player before the swing.
   - **`CombatCollision`** (`UBoxComponent` on the weapon socket) is **disabled by default** and toggled by `ActivateCollision()`/`DeactivateCollision()` from anim notifies during the swing window. Hits land via its overlap delegates (`CombatOnOverlapBegin`/`End`).
