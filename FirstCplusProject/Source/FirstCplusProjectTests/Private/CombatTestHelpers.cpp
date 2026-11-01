@@ -1,6 +1,8 @@
 #include "CombatTestHelpers.h"
 
+#include "FirstCplusProject/GameplayActors/Enemy.h"
 #include "FirstCplusProject/GameplayActors/MainCharacter.h"
+#include "FirstCplusProject/GameplayActors/MainPlayerController.h"
 
 FCombatWorldFixture FCombatWorldFixture::MakeCombatWorld()
 {
