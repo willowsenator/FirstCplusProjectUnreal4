@@ -26,7 +26,7 @@ This is a Windows project (`.sln`/`.vs/`/Visual Studio + UE 5.8). There is **no 
 - **Build (game target):** replace `FirstCplusProjectEditor` with `FirstCplusProject`.
 - **Run editor:** open `FirstCplusProject.uproject` (double-click) or `UnrealEditor.exe "<abs path>\FirstCplusProject.uproject"`.
 - **Hot Reload / Live Coding:** use Live Coding from inside the editor (Ctrl+Alt+F11) for iterative C++ changes. Header-layout changes (new `UPROPERTY`, new fields) require a full editor restart and rebuild.
-- **Tests:** Automation tests live in the editor-only `FirstCplusProjectTests` module (sanity test, combat world fixture helpers, asset-config tests). Don't claim test runs you didn't do — build both targets, run the automation tests in the editor, and exercise the gameplay path in PIE.
+- **Tests:** Automation tests live in the editor-only `FirstCplusProjectTests` module (sanity test, combat world fixture helpers, asset-config tests). `FCombatWorldFixture::MakeCombatWorld()` builds a world with no game mode; pass `true` for a test that goes through `TakeDamage`, because `APawn::TakeDamage` refuses all damage in a world without one. Don't claim test runs you didn't do — build both targets, run the automation tests in the editor, and exercise the gameplay path in PIE.
 
 ## Source Layout
 
