@@ -4,6 +4,7 @@
 #include "Enemy.h"
 
 #include "MainCharacter.h"
+#include "MainPlayerController.h"
 #include "Animation/AnimMontage.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -201,12 +202,17 @@ void AEnemy::AgroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AA
 	{
 		if (AMainCharacter* MainCharacter = Cast<AMainCharacter>(OtherActor))
 		{
-			MainCharacter->SetHasCombatTarget(false);
-			if (const auto MainPlayerController = MainCharacter->MainPlayerController)
+			// A player fighting another enemy keeps that target, its flag and its health bar.
+			if (!MainCharacter->CombatTarget || MainCharacter->CombatTarget == this)
 			{
-				MainPlayerController->RemoveEnemyHealthBar();
+				MainCharacter->SetCombatTarget(nullptr);
+				MainCharacter->SetHasCombatTarget(false);
+				if (const auto MainPlayerController = MainCharacter->MainPlayerController)
+				{
+					MainPlayerController->RemoveEnemyHealthBar();
+				}
 			}
-			
+
 			if (CombatTarget == MainCharacter)
 			{
 				CombatTarget = nullptr;
