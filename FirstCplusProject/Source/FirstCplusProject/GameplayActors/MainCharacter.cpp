@@ -15,6 +15,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Sound/SoundCue.h"
+#include "Enemy.h"
+#include "InputMappingContext.h"
+#include "MainPlayerController.h"
+#include "Weapon.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -170,16 +174,28 @@ void AMainCharacter::BeginPlay()
 
 	if (CombatMontage)
 	{
-		bool bHasActivate = false;
-		bool bHasDeactivate = false;
-		for (const FAnimNotifyEvent& Event : CombatMontage->Notifies)
-		{
-			if (Event.NotifyName == TEXT("ActivateCollision")) bHasActivate = true;
-			else if (Event.NotifyName == TEXT("DeactivateCollision")) bHasDeactivate = true;
-		}
-		ensureMsgf(bHasActivate && bHasDeactivate,
+		ensureMsgf(MontageHasCollisionNotifies(CombatMontage),
 			TEXT("AMainCharacter::CombatMontage is missing ActivateCollision and/or DeactivateCollision notifies — hit volume will never toggle"));
 	}
+}
+
+bool AMainCharacter::MontageHasCollisionNotifies(const UAnimMontage* Montage)
+{
+	if (!Montage)
+	{
+		return false;
+	}
+
+	bool bHasActivate = false;
+	bool bHasDeactivate = false;
+	for (const FAnimNotifyEvent& Event : Montage->Notifies)
+	{
+		// Blueprint notify names carry spaces ("Activate Collision"); the function names do not.
+		const FString Name = Event.NotifyName.ToString().Replace(TEXT(" "), TEXT(""));
+		if (Name == TEXT("ActivateCollision")) bHasActivate = true;
+		else if (Name == TEXT("DeactivateCollision")) bHasDeactivate = true;
+	}
+	return bHasActivate && bHasDeactivate;
 }
 
 // Called every frame
@@ -250,7 +266,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 	EnhancedInputComponent->BindAction(InputStartJumping, ETriggerEvent::Triggered, this,
 	                                   &AMainCharacter::StartJumping);
-	EnhancedInputComponent->BindAction(InputStopJumping, ETriggerEvent::Triggered, this, &AMainCharacter::StopJumping);
+	EnhancedInputComponent->BindAction(InputStopJumping, ETriggerEvent::Triggered, this, &AMainCharacter::OnStopJumpInput);
 
 	EnhancedInputComponent->BindAction(InputStartSprinting, ETriggerEvent::Triggered, this,
 	                                   &AMainCharacter::StartSprinting);
@@ -314,7 +330,7 @@ void AMainCharacter::StartJumping(const FInputActionValue& Value)
 	}
 }
 
-void AMainCharacter::StopJumping(const FInputActionValue& Value)
+void AMainCharacter::OnStopJumpInput(const FInputActionValue& Value)
 {
 	if (!Value.Get<bool>())
 	{

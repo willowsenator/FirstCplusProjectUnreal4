@@ -3,19 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Enemy.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
-#include "InputMappingContext.h"
-#include "MainPlayerController.h"
-#include "Weapon.h"
 #include "MainCharacter.generated.h"
 
 
 class UParticleSystem;
 class USoundCue;
 class UBoxComponent;
+class UAnimMontage;
+class UInputAction;
+class UInputMappingContext;
 class AEnemy;
+class AItem;
+class AMainPlayerController;
+class AWeapon;
 
 
 UENUM(BlueprintType)
@@ -233,6 +235,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void PlaySwingSound() const;
+
+	/** True when the montage carries both the hit-volume activate and deactivate notifies. */
+	static bool MontageHasCollisionNotifies(const UAnimMontage* Montage);
 	
 private:
 	void Move(const FInputActionValue& Value);
@@ -262,7 +267,7 @@ private:
 	/** Called via input to stop the character from jumping
 	 * @param Value This is the input value for stopping the character from jumping
 	 */
-	void StopJumping(const FInputActionValue& Value);
+	void OnStopJumpInput(const FInputActionValue& Value);
 
 	/*** Called via input to make the character sprint
      * @param Value This is the input value for sprinting the character

@@ -85,6 +85,7 @@ bool FFirstCplusProjectTests_MainCharacterBP_HasRequiredAssetSlots::RunTest(cons
 	}
 
 	TestNotNull(TEXT("CombatMontage is set"), Default->CombatMontage);
+	TestTrue(TEXT("CombatMontage carries the hit-volume notifies"), AMainCharacter::MontageHasCollisionNotifies(Default->CombatMontage));
 	TestNotNull(TEXT("InputMapping is set"), Default->InputMapping);
 	TestNotNull(TEXT("InputMove is set"), Default->InputMove);
 	TestNotNull(TEXT("InputTurnRate is set"), Default->InputTurnRate);
