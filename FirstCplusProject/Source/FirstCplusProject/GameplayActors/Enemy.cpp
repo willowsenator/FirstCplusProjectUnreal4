@@ -50,6 +50,7 @@ AEnemy::AEnemy()
 	bCanAttack = true;
 	
 	DeathDelay = 3.f;
+	DeathEndFallbackDelay = 5.f;
 	
 	// Steer around other AIs instead of pushing through their capsules
 	GetCharacterMovement()->bUseRVOAvoidance = true;
@@ -102,6 +103,8 @@ void AEnemy::Die()
 		AnimInstance->Montage_Play(CombatMontage, 1.0f);
 		AnimInstance->Montage_JumpToSection(FName("Death"), CombatMontage);
 	}
+	GetWorldTimerManager().SetTimer(DeathFallbackTimerHandle, this, &AEnemy::DeathEnd,
+		DeathEndFallbackDelay);
 	
 	SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Dead);
 	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -112,6 +115,13 @@ void AEnemy::Die()
 
 void AEnemy::DeathEnd()
 {
+	if (bDeathEndHandled)
+	{
+		return;
+	}
+	bDeathEndHandled = true;
+	GetWorldTimerManager().ClearTimer(DeathFallbackTimerHandle);
+
 	const auto MeshComp = GetMesh();
 	if (!MeshComp) return;
 	MeshComp->bPauseAnims = true;
