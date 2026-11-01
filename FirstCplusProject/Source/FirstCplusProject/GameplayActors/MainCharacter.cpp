@@ -144,8 +144,9 @@ void AMainCharacter::Die()
 float AMainCharacter::TakeDamage(const float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	AActor* DamageCauser)
 {
-	DecreaseHealth(DamageAmount);
-	return DamageAmount;
+	const float AppliedDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	DecreaseHealth(AppliedDamage);
+	return AppliedDamage;
 }
 
 void AMainCharacter::IncrementCoins(const int32 Amount)

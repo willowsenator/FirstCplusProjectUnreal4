@@ -3,8 +3,11 @@
 #include "FirstCplusProject/GameplayActors/Enemy.h"
 #include "FirstCplusProject/GameplayActors/MainCharacter.h"
 #include "FirstCplusProject/GameplayActors/MainPlayerController.h"
+#include "Engine/Engine.h"
+#include "Engine/GameInstance.h"
+#include "Engine/World.h"
 
-FCombatWorldFixture FCombatWorldFixture::MakeCombatWorld()
+FCombatWorldFixture FCombatWorldFixture::MakeCombatWorld(const bool bWithGameMode)
 {
 	FCombatWorldFixture Fixture;
 
@@ -19,6 +22,14 @@ FCombatWorldFixture FCombatWorldFixture::MakeCombatWorld()
 	FWorldContext& Context = GEngine->CreateNewWorldContext(EWorldType::Game);
 	Context.SetCurrentWorld(World);
 
+	if (bWithGameMode)
+	{
+		UGameInstance* GameInstance = NewObject<UGameInstance>(GEngine);
+		Context.OwningGameInstance = GameInstance;
+		World->SetGameInstance(GameInstance);
+		GameInstance->Init();
+		World->SetGameMode(FURL());
+	}
 
 	World->InitializeActorsForPlay(FURL());
 	World->BeginPlay();
@@ -48,6 +59,11 @@ void FCombatWorldFixture::Destroy()
 		return;
 	}
 	
+	if (UGameInstance* GameInstance = World->GetGameInstance())
+	{
+		GameInstance->Shutdown();
+	}
+
 	GEngine->DestroyWorldContext(World);
 	World->DestroyWorld(false);
 	

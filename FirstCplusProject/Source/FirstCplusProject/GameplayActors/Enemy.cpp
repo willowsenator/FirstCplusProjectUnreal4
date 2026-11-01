@@ -65,8 +65,9 @@ float AEnemy::TakeDamage(const float DamageAmount, struct FDamageEvent const& Da
 		return 0.f;
 	}
 
-	DecreaseHealth(DamageAmount);
-	return DamageAmount;
+	const float AppliedDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	DecreaseHealth(AppliedDamage);
+	return AppliedDamage;
 }
 
 void AEnemy::DecreaseHealth(const float Amount)
