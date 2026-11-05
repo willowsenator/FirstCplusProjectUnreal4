@@ -1,11 +1,18 @@
-/FirstCplusProject/Content/Fantasy_Pack/*
-/FirstCplusProject/Content/Realistic_Starter_VFX_Pack_Vol2/*
-/FirstCplusProject/Content/Mediterranean_Coast/*
-/FirstCplusProject/Content/MegaMagicVFXBundle/*
+/Content/Fantasy_Pack/*
+/Content/InfinityBladeAdversaries/*
+/Content/Realistic_Starter_VFX_Pack_Vol2/*
+/Content/Mediterranean_Coast/*
+/Content/MegaMagicVFXBundle/*
 
 # Per-developer agent config (not for the repo)
 .claude/
 .mcp.json
+
+# Per-user IDE assistant state
+claudeCodeEditorTabs.xml
+
+# Solution variants
+*.slnx
 
 # Visual Studio 2015 user specific files
 .vs/
@@ -81,3 +88,46 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+# engine-assets:begin
+*.[fF][bB][xX]
+*.[gG][lL][bB]
+*.[gG][lL][tT][fF]
+*.[bB][iI][nN]
+*.[oO][bB][jJ]
+*.[pP][sS][dD]
+*.[bB][lL][eE][nN][dD]
+*.[wW][aA][vV]
+*.[tT][gG][aA]
+*.[pP][nN][gG]
+*.[jJ][pP][gG]
+*.[jJ][pP][eE][gG]
+*.[eE][xX][rR]
+*.[hH][dD][rR]
+*.[tT][iI][fF]
+*.[tT][iI][fF][fF]
+*.[mM][pP]3
+*.[oO][gG][gG]
+*.[fF][lL][aA][cC]
+*.[mM][pP]4
+*.[mM][oO][vV]
+*.[tT][tT][fF]
+*.[oO][tT][fF]
+*.[wW][eE][bB][pP]
+*.[bB][mM][pP]
+*.[gG][iI][fF]
+*.[dD][dD][sS]
+*.[iI][cC][oO]
+*.[aA][iI][fF]
+*.[aA][iI][fF][fF]
+*.[zZ][iI][pP]
+*.[dD][lL][lL]
+*.[sS][oO]
+*.[uU][aA][sS][sS][eE][tT]
+*.[uU][mM][aA][pP]
+/[bB][iI][nN][aA][rR][iI][eE][sS]/
+/[iI][nN][tT][eE][rR][mM][eE][dD][iI][aA][tT][eE]/
+/[sS][aA][vV][eE][dD]/
+/[dD][eE][rR][iI][vV][eE][dD][dD][aA][tT][aA][cC][aA][cC][hH][eE]/
+/Plugins/*/[bB][iI][nN][aA][rR][iI][eE][sS]/
+/Plugins/*/[iI][nN][tT][eE][rR][mM][eE][dD][iI][aA][tT][eE]/
+# engine-assets:end
