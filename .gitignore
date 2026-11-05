@@ -1,11 +1,18 @@
-/FirstCplusProject/Content/Fantasy_Pack/*
-/FirstCplusProject/Content/Realistic_Starter_VFX_Pack_Vol2/*
-/FirstCplusProject/Content/Mediterranean_Coast/*
-/FirstCplusProject/Content/MegaMagicVFXBundle/*
+/Content/Fantasy_Pack/*
+/Content/InfinityBladeAdversaries/*
+/Content/Realistic_Starter_VFX_Pack_Vol2/*
+/Content/Mediterranean_Coast/*
+/Content/MegaMagicVFXBundle/*
 
 # Per-developer agent config (not for the repo)
 .claude/
 .mcp.json
+
+# Per-user IDE assistant state
+claudeCodeEditorTabs.xml
+
+# Solution variants
+*.slnx
 
 # Visual Studio 2015 user specific files
 .vs/
