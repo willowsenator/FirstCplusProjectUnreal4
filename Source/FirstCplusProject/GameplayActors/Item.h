@@ -8,6 +8,8 @@
 #include "NiagaraComponent.h"
 #include "Item.generated.h"
 
+class USoundCue;
+
 UCLASS()
 class FIRSTCPLUSPROJECT_API AItem : public AActor
 {
